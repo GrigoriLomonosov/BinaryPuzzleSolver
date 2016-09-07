@@ -148,7 +148,6 @@
   <ItemGroup>
     <ClInclude Include="BinaryPuzzle.h" />
     <ClInclude Include="Tester.h" />
-    <ClInclude Include="TestSuite.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryPuzzle.c" />
