@@ -66,5 +66,12 @@
 #define Q45 "------011010------------------0110--"
 #define Q46 "-0---0-1---1-1---1-0---0-1-----0----"
 
+//Testcases for complete_half_RC
+#define Q47 "------------------110---------------"
+#define Q48 "1-----1-----0-----------------------"
+
+//Testcases for eliminate_other_impossible_combos
+
+
 #endif // !TESTER_H
 
