@@ -1,13 +1,16 @@
 #ifndef BINARYPUZZLE_H
 #define BINARYPUZZLE_H
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define MIN_DIMENSION 6
 #define MAX_DIMENSION 36
 
 typedef struct BinaryPuzzle {
-	int n;
+	int* dim;
 	int** squares;
 } BinaryPuzzle;
 
@@ -20,7 +23,14 @@ void free_puzzle(BinaryPuzzle* puzzle);
 /*
 Adds a 0 or 1 or '-1' to the given square in the puzzle.
  */
-void add_number(int row, int col, int number);
+void add_number(BinaryPuzzle* puzzle, int row, int col, int number);
+
+/*
+Compares two binary_puzzles.
+Returns 1 if and only if the 2 binary_puzzles have the same dimension and every square is identical to the square of the other
+binary_puzzle with the same coordinates.
+*/
+int compare_puzzles(BinaryPuzzle* puzzle1, BinaryPuzzle* puzzle2);
 
 /*
 Finds pairs of 0's in the puzzle and fills the edges with 1's (analogue with pairs of 1).

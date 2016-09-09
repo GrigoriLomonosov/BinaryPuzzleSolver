@@ -1,13 +1,15 @@
 #ifndef TESTER_H
 #define TESTER_H
 
-#include "BinaryPuzzle.h"
-#include <stdio.h>
-#include <assert.h>
-#include <string.h>
+//Define this macro to ignore all assertions
+//#define NDEBUG
 
-#define EMTPY_Q ""
-#define FULL_Q "101010010101101001010110100101011010"
+#include "BinaryPuzzle.h"
+#include <assert.h>
+
+#define EMPTY_Q ""
+#define FULL_Q1 "101010010101101001010110100101011010"
+#define FULL_Q2 "1-101--1010110100101011---0101011010"
 //invalid char, only 1,0,- allowed in input string
 #define INVALID_Q1 "101010010101011010010101101001a1011010"
 //invalid dimensions, 35 char
@@ -150,16 +152,16 @@
 "0101101010100110011001010101101001101010100110011001100101011001100101100110110010100110010011011000110011010101110011010010100010110011010110110010110010110010010011010110011010011010010101011010"
 
 
-int test_init_puzzle(char* input);
+void test_init_puzzle();
 
-int test_find_pairs();
-int test_avoid_trios();
-int test_complete_RC();
-int test_eliminate_impossible_combos();
-int test_complete_half_RC();
-int test_eliminate_other_impossible_combos();
+void test_find_pairs();
+void test_avoid_trios();
+void test_complete_RC();
+void test_eliminate_impossible_combos();
+void test_complete_half_RC();
+void test_eliminate_other_impossible_combos();
 
-int test_general_solver();
+void test_general_solver();
 
 
 #endif // !TESTER_H
