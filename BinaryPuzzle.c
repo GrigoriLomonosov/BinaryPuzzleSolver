@@ -35,8 +35,10 @@ BinaryPuzzle* init_puzzle(char* input) {
 		puzzle_pointer->dim = malloc(sizeof(int));
 		*(puzzle_pointer->dim) = dimension;
 		puzzle_pointer->squares = malloc(dimension*sizeof(int*));
+		puzzle_pointer->transponse = malloc(dimension*sizeof(int*));
 		for (int i = 0; i < dimension; i++) {
 			puzzle_pointer->squares[i] = malloc(dimension*sizeof(int));
+			puzzle_pointer->transponse[i] = malloc(dimension*sizeof(int));
 			for (int j = 0; j < dimension; j++) {
 				char c = input[i*dimension + j];
 				if (c == '-') {
@@ -48,6 +50,11 @@ BinaryPuzzle* init_puzzle(char* input) {
 				}
 			}
 		}
+		for (int i = 0; i < dimension; i++) {
+			for (int j = 0; j < dimension; j++) {
+				puzzle_pointer->transponse[i][j] = puzzle_pointer->squares[j][i];
+			}
+		}
 		return puzzle_pointer;
 	}
 }
@@ -55,8 +62,10 @@ BinaryPuzzle* init_puzzle(char* input) {
 void free_puzzle(BinaryPuzzle* puzzle) {
 	for (int i = 0; i < 6; i++) {
 		free(puzzle->squares[i]);
+		free(puzzle->transponse[i]);
 	}
 	free(puzzle->squares);
+	free(puzzle->transponse);
 	free(puzzle->dim);
 	free(puzzle);
 }
@@ -111,17 +120,21 @@ int find_pairs(BinaryPuzzle* puzzle) {
 					//0 becomes 1, 1 becomes 0
 					add_number(puzzle, i, j - 1, (puzzle->squares[i][j] + 1) % 2);
 					add_number(puzzle, i, j + 2, (puzzle->squares[i][j] + 1) % 2);
+					puzzle->transponse[j - 1][i] = puzzle->squares[i][j - 1];
+					puzzle->transponse[j + 2][i] = puzzle->squares[i][j + 2];
 					changed = 0;
 			}
 			//Check col
-			if (puzzle->squares[j - 1][i] == -1 && 
-				puzzle->squares[j][i] == puzzle->squares[j + 1][i] &&
-				(puzzle->squares[j][i] == 0 || puzzle->squares[j][i] == 1) && 
-				puzzle->squares[j + 2][i] == -1) {
-					//0 becomes 1, 1 becomes 0
-					add_number(puzzle, j - 1, i, (puzzle->squares[j][i] + 1) % 2);
-					add_number(puzzle, j + 2, i, (puzzle->squares[j][i] + 1) % 2);
-					changed = 0;
+			if (puzzle->transponse[i][j - 1] == -1 &&
+				puzzle->transponse[i][j] == puzzle->transponse[i][j + 1] &&
+				(puzzle->transponse[i][j] == 0 || puzzle->transponse[i][j] == 1) &&
+				puzzle->transponse[i][j + 2] == -1) {
+				//0 becomes 1, 1 becomes 0
+				add_number(puzzle, j - 1, i, (puzzle->transponse[i][j] + 1) % 2);
+				add_number(puzzle, j + 2, i, (puzzle->transponse[i][j] + 1) % 2);
+				puzzle->transponse[i][j - 1] = puzzle->squares[j - 1][i];
+				puzzle->transponse[i][j + 2] = puzzle->squares[j + 2][i];
+				changed = 0;
 			}
 		}
 	}
@@ -141,11 +154,12 @@ int avoid_trios(BinaryPuzzle* puzzle) {
 				changed = 0;
 			}
 			//Check col
-			if (puzzle->squares[j][i] == -1 &&
-				puzzle->squares[j - 1][i] == puzzle->squares[j + 1][i] &&
-				(puzzle->squares[j - 1][i] == 0 || puzzle->squares[j - 1][i] == 1)) {
+			if (puzzle->transponse[i][j] == -1 &&
+				puzzle->transponse[i][j - 1] == puzzle->transponse[i][j + 1] &&
+				(puzzle->transponse[i][j - 1] == 0 || puzzle->transponse[i][j - 1] == 1)) {
 				//0 becomes 1, 1 becomes 0
-				add_number(puzzle, j, i, (puzzle->squares[j - 1][i] + 1) % 2);
+				add_number(puzzle, j, i, (puzzle->transponse[i][j - 1] + 1) % 2);
+				puzzle->transponse[i][j] = puzzle->squares[j][i];
 				changed = 0;
 			}
 		}

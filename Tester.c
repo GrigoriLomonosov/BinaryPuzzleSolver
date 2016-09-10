@@ -14,6 +14,49 @@ void test_init_puzzle() {
 	assert(*puzzle_2->dim == 6);
 
 	//testing some random values from the matrices.
+	assert(puzzle_1->squares[0][0] == puzzle_1->transponse[0][0]);
+	assert(puzzle_1->squares[0][3] == puzzle_1->transponse[3][0]);
+	assert(puzzle_1->squares[0][5] == puzzle_1->transponse[5][0]);
+	assert(puzzle_1->squares[1][2] == puzzle_1->transponse[2][1]);
+	assert(puzzle_1->squares[1][1] == puzzle_1->transponse[1][1]);
+	assert(puzzle_1->squares[1][3] == puzzle_1->transponse[3][1]);
+	assert(puzzle_1->squares[1][4] == puzzle_1->transponse[4][1]);
+	assert(puzzle_1->squares[2][0] == puzzle_1->transponse[0][2]);
+	assert(puzzle_1->squares[2][1] == puzzle_1->transponse[1][2]);
+	assert(puzzle_1->squares[2][2] == puzzle_1->transponse[2][2]);
+	assert(puzzle_1->squares[3][5] == puzzle_1->transponse[5][3]);
+	assert(puzzle_1->squares[3][2] == puzzle_1->transponse[2][3]);
+	assert(puzzle_1->squares[3][3] == puzzle_1->transponse[3][3]);
+	assert(puzzle_1->squares[4][4] == puzzle_1->transponse[4][4]);
+	assert(puzzle_1->squares[4][3] == puzzle_1->transponse[3][4]);
+	assert(puzzle_1->squares[4][0] == puzzle_1->transponse[0][4]);
+	assert(puzzle_1->squares[5][5] == puzzle_1->transponse[5][5]);
+	assert(puzzle_1->squares[5][2] == puzzle_1->transponse[2][5]);
+	assert(puzzle_1->squares[5][1] == puzzle_1->transponse[1][5]);
+	assert(puzzle_1->squares[5][0] == puzzle_1->transponse[0][5]);
+
+	assert(puzzle_2->squares[0][0] == puzzle_2->transponse[0][0]);
+	assert(puzzle_2->squares[0][3] == puzzle_2->transponse[3][0]);
+	assert(puzzle_2->squares[0][5] == puzzle_2->transponse[5][0]);
+	assert(puzzle_2->squares[1][2] == puzzle_2->transponse[2][1]);
+	assert(puzzle_2->squares[1][1] == puzzle_2->transponse[1][1]);
+	assert(puzzle_2->squares[1][3] == puzzle_2->transponse[3][1]);
+	assert(puzzle_2->squares[1][4] == puzzle_2->transponse[4][1]);
+	assert(puzzle_2->squares[2][0] == puzzle_2->transponse[0][2]);
+	assert(puzzle_2->squares[2][1] == puzzle_2->transponse[2][1]);
+	assert(puzzle_2->squares[2][2] == puzzle_2->transponse[2][2]);
+	assert(puzzle_2->squares[3][5] == puzzle_2->transponse[5][3]);
+	assert(puzzle_2->squares[3][2] == puzzle_2->transponse[2][3]);
+	assert(puzzle_2->squares[3][3] == puzzle_2->transponse[3][3]);
+	assert(puzzle_2->squares[4][4] == puzzle_2->transponse[4][4]);
+	assert(puzzle_2->squares[4][3] == puzzle_2->transponse[3][4]);
+	assert(puzzle_2->squares[4][0] == puzzle_2->transponse[0][4]);
+	assert(puzzle_2->squares[5][5] == puzzle_2->transponse[5][5]);
+	assert(puzzle_2->squares[5][2] == puzzle_2->transponse[2][5]);
+	assert(puzzle_2->squares[5][1] == puzzle_2->transponse[1][5]);
+	assert(puzzle_2->squares[5][0] == puzzle_2->transponse[0][5]);
+
+	//Testing the transponse of both matrices.
 	assert(puzzle_1->squares[0][0] == 1);
 	assert(puzzle_1->squares[0][3] == 0);
 	assert(puzzle_1->squares[0][5] == 0);
