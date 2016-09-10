@@ -68,7 +68,7 @@ void test_find_pairs() {
 		find_pairs(puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
-		printf("Puzzle_nr: %d passed find_pairs_test.\n", i);
+		printf("Puzzle_nr: %d passed find_pairs test.\n", i);
 		free_puzzle(puzzle_1);
 		free_puzzle(puzzle_2);
 	}
@@ -83,6 +83,7 @@ void test_avoid_trios() {
 		avoid_trios(puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
+		printf("Puzzle_nr: %d passed avoid_trios test.\n", i);
 		free_puzzle(puzzle_1);
 		free_puzzle(puzzle_2);
 	}
@@ -97,6 +98,7 @@ void test_complete_RC() {
 		complete_RC(puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
+		printf("Puzzle_nr: %d passed complete_RC test.\n", i);
 		free_puzzle(puzzle_1);
 		free_puzzle(puzzle_2);
 	}
@@ -111,6 +113,7 @@ void test_eliminate_impossible_combos() {
 		eliminate_impossible_combos(puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
+		printf("Puzzle_nr: %d passed eliminate_impossible_combos test.\n", i);
 		free_puzzle(puzzle_1);
 		free_puzzle(puzzle_2);
 	}
@@ -125,6 +128,7 @@ void test_complete_half_RC() {
 		complete_half_RC(puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
+		printf("Puzzle_nr: %d passed complete_half_RC test.\n", i);
 		free_puzzle(puzzle_1);
 		free_puzzle(puzzle_2);
 	}
@@ -139,6 +143,7 @@ void test_eliminate_other_impossible_combos() {
 		eliminate_other_impossible_combos(puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
+		printf("Puzzle_nr: %d passed eliminate_other_impossible_combos test.\n", i);
 		free_puzzle(puzzle_1);
 		free_puzzle(puzzle_2);
 	}
@@ -153,6 +158,7 @@ void test_general_solver() {
 		solve_puzzle(puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
+		printf("Puzzle_nr: %d passed general_solver test.\n", i);
 		free_puzzle(puzzle_1);
 		free_puzzle(puzzle_2);
 	}

@@ -129,8 +129,28 @@ int find_pairs(BinaryPuzzle* puzzle) {
 }
 
 int avoid_trios(BinaryPuzzle* puzzle) {
-	
-	return 0;
+	int changed = 1;
+	for (int i = 0; i < *puzzle->dim; i++) {
+		for (int j = 1; j < *puzzle->dim - 1; j++) {
+			//Check row
+			if (puzzle->squares[i][j] == -1 &&
+				puzzle->squares[i][j-1] == puzzle->squares[i][j + 1] &&
+				(puzzle->squares[i][j-1] == 0 || puzzle->squares[i][j-1] == 1)) {
+				//0 becomes 1, 1 becomes 0
+				add_number(puzzle, i, j, (puzzle->squares[i][j-1] + 1) % 2);
+				changed = 0;
+			}
+			//Check col
+			if (puzzle->squares[j][i] == -1 &&
+				puzzle->squares[j - 1][i] == puzzle->squares[j + 1][i] &&
+				(puzzle->squares[j - 1][i] == 0 || puzzle->squares[j - 1][i] == 1)) {
+				//0 becomes 1, 1 becomes 0
+				add_number(puzzle, j, i, (puzzle->squares[j - 1][i] + 1) % 2);
+				changed = 0;
+			}
+		}
+	}
+	return changed;
 }
 
 int complete_RC(BinaryPuzzle* puzzle) {
