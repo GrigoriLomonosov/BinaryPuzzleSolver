@@ -5,9 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <vector>
+#include <stdbool.h>
 
 #define MIN_DIMENSION 6
 #define MAX_DIMENSION 36
+
+
 
 /*
 The field transponse is the transponse of the squares matrix. The transponse is kept because the matrix will be traversed several times
@@ -24,6 +28,17 @@ Only even dimensions between the boundaries are allowed. The input should only c
 */
 BinaryPuzzle* init_puzzle(char* input);
 void free_puzzle(BinaryPuzzle* puzzle);
+
+/*
+Returns True if there is atleast 1 empty cell.
+*/
+bool isEmpty(BinaryPuzzle* puzzle);
+
+
+/*
+Deep Copy, Duh.
+*/
+BinaryPuzzle* clone(BinaryPuzzle* puzzle);
 
 /*
 Adds a 0 or 1 or '-1' to the given square in the puzzle.
