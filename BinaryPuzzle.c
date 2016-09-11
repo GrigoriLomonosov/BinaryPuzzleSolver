@@ -102,6 +102,9 @@ int compare_puzzles(BinaryPuzzle* puzzle_1, BinaryPuzzle* puzzle_2) {
 	}
 }
 
+/*
+Adds a 0 or 1 or '-1' to the given square in the puzzle.
+*/
 void add_number(BinaryPuzzle* puzzle, int row, int col, int number) {
 	if (row < 0 || row > *puzzle->dim || col < 0 || col > *puzzle->dim) {
 		printf("ERROR: The given coordinates fall out of scope of the matrix dimensions.");
@@ -268,11 +271,13 @@ int compare_arrays(int* first, int* second, int size) {
 	return 0;
 }
 
+//DIT WERKT NOG NIET HELEMAAL!!
 /*
 Returns 0 if and only if a 1 can be filled in in the given square
 based on the three rules of binary puzzles.
 */
 int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
+	int possible = 1;
 	if (puzzle->squares[row][col] == -1) {
 		add_number(puzzle, row, col, 1);
 		//Check for 3 consecutive ones
@@ -365,6 +370,7 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 }
 
 /*
+IS DIT NODIG????
 Returns 0 if and only if a 0 can be filled in in the given square
 based on the three rules of binary puzzles.
 */
@@ -372,24 +378,28 @@ int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
 	return 1;
 }
 
+//WERKT NOG NIET HELEMAAL...
 int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
 	int changed = 1;
-	for (int i = 0; i > *puzzle->dim; i++) {
+	for (int i = 0; i < *puzzle->dim; i++) {
 		for (int j = 0; j < *puzzle->dim; j++) {
+			printf("%d", is_one_possible(puzzle, i, j));
 			if (is_one_possible(puzzle, i, j) != 0) {
 				add_number(puzzle, i, j, 0);
 				changed = 0;
 			}
 		}
+		printf("\n");
 	}
 	return changed;
 }
 
+//Deze methodes worden waarschijnlijk overbodig.
 int complete_half_RC(BinaryPuzzle* puzzle) {
 
 	return 0;
 }
-
+//Deze methode wordt waarschijnlijk overbodig
 int eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
 
 	return 0;
