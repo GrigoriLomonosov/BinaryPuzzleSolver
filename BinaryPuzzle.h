@@ -28,6 +28,7 @@ Only even dimensions between the boundaries are allowed. The input should only c
 */
 BinaryPuzzle* init_puzzle(char* input);
 void free_puzzle(BinaryPuzzle* puzzle);
+void print_puzzle(BinaryPuzzle* puzzle);
 
 /*
 Returns True if there is atleast 1 empty cell.
