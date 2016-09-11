@@ -5,8 +5,7 @@
 
 #include "Tester.h"
 
-int main() {
-	printf("Testing BinaryPuzzleSolver\n\n");
+void test() {
 	test_init_puzzle();
 	test_find_pairs();
 	test_avoid_trios();
@@ -15,6 +14,18 @@ int main() {
 	//test_complete_half_RC();
 	//test_eliminate_other_impossible_combos();
 	//test_general_solver();
+}
+
+void run() {
+}
+
+int main() {
+	printf("Testing BinaryPuzzleSolver\n\n");
+	#ifdef DEBUG
+	test();
+	#else
+	run();
+	#endif
 	getchar();
 	#ifdef _MSC_VER
 		_CrtDumpMemoryLeaks();
