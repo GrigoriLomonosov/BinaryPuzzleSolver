@@ -275,5 +275,5 @@ int eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
 }
 
 void solve_puzzle(BinaryPuzzle* puzzle) {
-
+	//Werken met een kopie om onverwachte, externe veranderingen te vermijden.
 }
