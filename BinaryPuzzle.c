@@ -60,9 +60,11 @@ BinaryPuzzle* init_puzzle(char* input) {
 }
 
 void free_puzzle(BinaryPuzzle* puzzle) {
-	for (int i = 0; i < 6; i++) {
-		free(puzzle->squares[i]);
-		free(puzzle->transponse[i]);
+	for (int i = 0; i < puzzle->dim; i++) {
+		if(puzzle->squares[i])
+			free(puzzle->squares[i]);
+		if(puzzle->transponse[i])
+			free(puzzle->transponse[i]);
 	}
 	free(puzzle->squares);
 	free(puzzle->transponse);
