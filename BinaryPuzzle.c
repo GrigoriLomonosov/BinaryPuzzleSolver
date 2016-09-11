@@ -82,6 +82,14 @@ void print_puzzle(BinaryPuzzle* puzzle) {
 	printf("\n");
 }
 
+bool isEmpty(BinaryPuzzle* puzzle) {
+
+}
+
+BinaryPuzzle* clone(BinaryPuzzle* puzzle) {
+
+}
+
 int compare_puzzles(BinaryPuzzle* puzzle_1, BinaryPuzzle* puzzle_2) {
 	if (*puzzle_1->dim == *puzzle_2->dim) {
 		for (int i = 0; i < *puzzle_1->dim; i++) {
@@ -407,7 +415,7 @@ int eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
 
 void solve_puzzle(BinaryPuzzle* original) {
 	//Werken met een kopie om onverwachte, externe veranderingen te vermijden.
-	const BinaryPuzzle* puzzle = clone(original);
+	BinaryPuzzle* puzzle = clone(original);
 
 	// With every iteration we expect to fill in atleast 1 (empty) cell. 
 	int maxIter = *puzzle->dim * *puzzle->dim, counter=0;
