@@ -85,10 +85,10 @@ int compare_puzzles(BinaryPuzzle* puzzle_1, BinaryPuzzle* puzzle_2) {
 		for (int i = 0; i < *puzzle_1->dim; i++) {
 			for (int j = 0; j < *puzzle_1->dim; j++) {
 				if (puzzle_1->squares[i][j] != puzzle_2->squares[i][j]) {
-					/*printf("puzzle1: \n");
+					printf("puzzle1: \n");
 					print_puzzle(puzzle_1);
 					printf("puzzle2: \n");
-					print_puzzle(puzzle_2);*/
+					print_puzzle(puzzle_2);
 					return 1;
 				}
 			}
@@ -103,9 +103,11 @@ int compare_puzzles(BinaryPuzzle* puzzle_1, BinaryPuzzle* puzzle_2) {
 void add_number(BinaryPuzzle* puzzle, int row, int col, int number) {
 	if (row < 0 || row > *puzzle->dim || col < 0 || col > *puzzle->dim) {
 		printf("ERROR: The given coordinates fall out of scope of the matrix dimensions.");
-		exit(1);
+		//exit(1);
 	}
+	//printf("row: %d col: %d nr: %d", row, col, number);
 	puzzle->squares[row][col] = number;
+	puzzle->transponse[col][row] = number;
 }
 
 int find_pairs(BinaryPuzzle* puzzle) {
@@ -120,8 +122,6 @@ int find_pairs(BinaryPuzzle* puzzle) {
 					//0 becomes 1, 1 becomes 0
 					add_number(puzzle, i, j - 1, (puzzle->squares[i][j] + 1) % 2);
 					add_number(puzzle, i, j + 2, (puzzle->squares[i][j] + 1) % 2);
-					puzzle->transponse[j - 1][i] = puzzle->squares[i][j - 1];
-					puzzle->transponse[j + 2][i] = puzzle->squares[i][j + 2];
 					changed = 0;
 			}
 			//Check col
@@ -132,8 +132,6 @@ int find_pairs(BinaryPuzzle* puzzle) {
 				//0 becomes 1, 1 becomes 0
 				add_number(puzzle, j - 1, i, (puzzle->transponse[i][j] + 1) % 2);
 				add_number(puzzle, j + 2, i, (puzzle->transponse[i][j] + 1) % 2);
-				puzzle->transponse[i][j - 1] = puzzle->squares[j - 1][i];
-				puzzle->transponse[i][j + 2] = puzzle->squares[j + 2][i];
 				changed = 0;
 			}
 		}
@@ -159,7 +157,6 @@ int avoid_trios(BinaryPuzzle* puzzle) {
 				(puzzle->transponse[i][j - 1] == 0 || puzzle->transponse[i][j - 1] == 1)) {
 				//0 becomes 1, 1 becomes 0
 				add_number(puzzle, j, i, (puzzle->transponse[i][j - 1] + 1) % 2);
-				puzzle->transponse[i][j] = puzzle->squares[j][i];
 				changed = 0;
 			}
 		}
@@ -168,8 +165,96 @@ int avoid_trios(BinaryPuzzle* puzzle) {
 }
 
 int complete_RC(BinaryPuzzle* puzzle) {
-
-	return 0;
+	int changed = 1;	
+	for (int i = 0; i < *puzzle->dim; i++) {
+		//Check row
+		int coordinates[2] = { -1, -1 };
+		int count_empty = 0;
+		int count_0 = 0;
+		int count_1 = 0;
+		for (int j = 0; j < *puzzle->dim; j++) {
+			if (puzzle->squares[i][j] == 0) {
+				count_0++;
+			}
+			if (puzzle->squares[i][j] == 1) {
+				count_1++;
+			}
+			if (puzzle->squares[i][j] == -1) {
+				if (count_empty == 2) {
+					break;
+				}
+				else {
+					coordinates[count_empty] = j;
+					count_empty++;
+				}
+			}
+		}
+		//Change row
+		if (count_0 == *puzzle->dim / 2) {
+			if (count_empty == 2) {
+				add_number(puzzle, i, coordinates[0], 1);
+				add_number(puzzle, i, coordinates[1], 1);
+			}
+			else {
+				add_number(puzzle, i, coordinates[0], 1);
+			}
+			changed = 0;
+		}
+		if (count_1 == *puzzle->dim / 2) {
+			if (count_empty == 2) {
+				add_number(puzzle, i, coordinates[0], 0);
+				add_number(puzzle, i, coordinates[1], 0);
+			}
+			else {
+				add_number(puzzle, i, coordinates[0], 0);
+			}
+			changed = 0;
+		}
+		//Check col
+		int coordinates_C[2] = { -1, -1 };
+		int count_empty_C = 0;
+		int count_0_C = 0;
+		int count_1_C = 0;
+		for (int j = 0; j < *puzzle->dim; j++) {
+			if (puzzle->transponse[i][j] == 0) {
+				count_0_C++;
+			}
+			if (puzzle->transponse[i][j] == 1) {
+				count_1_C++;
+			}
+			if (puzzle->transponse[i][j] == -1) {
+				if (count_empty_C == 2) {
+					break;
+				}
+				else {
+					coordinates_C[count_empty_C] = j;
+					count_empty_C++;
+				}
+			}
+		}
+		//Change col
+		if (count_0_C == *puzzle->dim / 2) {
+			if (count_empty_C == 2) {
+				add_number(puzzle, coordinates_C[0],i , 1);
+				add_number(puzzle, coordinates_C[1],i , 1);
+			}
+			else {
+				add_number(puzzle, coordinates_C[0],i , 1);
+			}
+			changed = 0;
+		}
+		if (count_1_C == *puzzle->dim / 2) {
+			if (count_empty_C == 2) {
+				add_number(puzzle, coordinates_C[0],i , 0);
+				add_number(puzzle, coordinates_C[1],i , 0);
+			}
+			else {
+				add_number(puzzle, coordinates_C[0],i , 0);
+			}
+			changed = 0;
+		}
+	}
+	return changed;
 }
 
 int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
