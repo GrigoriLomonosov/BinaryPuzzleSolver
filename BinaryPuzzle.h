@@ -27,16 +27,16 @@ void free_puzzle(BinaryPuzzle* puzzle);
 void print_puzzle(BinaryPuzzle* puzzle);
 
 /*
-Adds a 0 or 1 or '-1' to the given square in the puzzle.
- */
-void add_number(BinaryPuzzle* puzzle, int row, int col, int number);
-
-/*
 Compares two binary_puzzles.
 Returns 0 if and only if the 2 binary_puzzles have the same dimension and every square is identical to the square of the other
 binary_puzzle with the same coordinates.
 */
 int compare_puzzles(BinaryPuzzle* puzzle_1, BinaryPuzzle* puzzle_2);
+
+/*
+Returns 0 if and only if a given puzzle is a valid solution.
+*/
+int is_valid_solution(BinaryPuzzle* puzzle);
 
 /*
 Finds pairs of 0's in the puzzle and fills the edges with 1's (analogue with pairs of 1).
@@ -58,19 +58,19 @@ Returns 0 if at least one square in a row/column was filled, 1 if not.
 int complete_RC(BinaryPuzzle* puzzle);
 
 /*
-No two rows/columns can be identical. Searches and fills a row/column based on this rule.
-Returns 0 if at least one square in a row/column was filled, 1 if not.
+Checks every square if a 1 or 0 can be filled in based on the 3 rules of a binary puzzle. 
+Returns 0 if at least one square in was filled, 1 if not.
 */
 int eliminate_impossible_combos(BinaryPuzzle* puzzle);
 
-/*
+/*OVERBODIG???
 When the first or last n/2 squares in a row are filled with n/2-floor((n/2)/3) 1's and n%3=1, then there is only one possibility
 to fill in the remaining row. Analogue for column and 0's.
 Returns 0 if at least one column or row was completed in this manner.
 */
 int complete_half_RC(BinaryPuzzle* puzzle);
 
-/*
+/*OVERBODIG???
 Calculates all possible combos for a row/column based on what is already filled in, in that row/column.
 Afterwards impossible combos are deleted based on the above rules. When the combos all have one (or more) square(s) in common, that square(s) is (are) filled.
 Returns 0 if at least one square was filled, 1 if not.
