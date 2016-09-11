@@ -395,6 +395,19 @@ int eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
 	return 0;
 }
 
-void solve_puzzle(BinaryPuzzle* puzzle) {
+void solve_puzzle(BinaryPuzzle* original) {
 	//Werken met een kopie om onverwachte, externe veranderingen te vermijden.
+	const BinaryPuzzle* puzzle = clone(original);
+
+	// With every iteration we expect to fill in atleast 1 (empty) cell. 
+	int maxIter = *puzzle->dim * *puzzle->dim, counter=0;
+	while ( (!isEmpty(puzzle)) && counter<maxIter ) {
+		// CAN BE OPTIMIZED : Try every single move
+		find_pairs(puzzle);
+		avoid_trios(puzzle);
+		complete_RC(puzzle);
+	}
+	//
+	original = puzzle;
+	free(puzzle);
 }
