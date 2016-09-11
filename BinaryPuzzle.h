@@ -24,6 +24,7 @@ Only even dimensions between the boundaries are allowed. The input should only c
 */
 BinaryPuzzle* init_puzzle(char* input);
 void free_puzzle(BinaryPuzzle* puzzle);
+void print_puzzle(BinaryPuzzle* puzzle);
 
 /*
 Adds a 0 or 1 or '-1' to the given square in the puzzle.
