@@ -291,7 +291,6 @@ int compare_arrays(int* first, int* second, int size) {
 	return 0;
 }
 
-//DIT WERKT NOG NIET HELEMAAL!!
 /*
 Returns 0 if and only if a 1 can be filled in in the given square
 based on the three rules of binary puzzles.
@@ -306,10 +305,12 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 		int col_first = row - 1;
 		int col_third = row + 1;
 		if (row_first >= 0 && row_third < *puzzle->dim && puzzle->squares[row][row_first] == 1 && puzzle->squares[row][row_third] == 1) {
+			printf("3 in de rij\n");
 			add_number(puzzle, row, col, -1);
 			return 1;
 		}
 		if (col_first >= 0 && col_third < *puzzle->dim && puzzle->transponse[col][col_first] == 1 && puzzle->transponse[col][col_third] == 1) {
+			printf("3 in de col\n");
 			add_number(puzzle, row, col, -1);
 			return 1;
 		}
@@ -338,6 +339,12 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 		}
 		//Check number of ones
 		if (count_1 > *puzzle->dim / 2 || count_1_C > *puzzle->dim / 2) {
+			if (count_1 > *puzzle->dim / 2) {
+				printf("teveel 1-en in rij\n");
+			}
+			if (count_1_C > *puzzle->dim / 2) {
+				printf("teveel 1-en in col\n");
+			}
 			add_number(puzzle, row, col, -1);
 			return 1;
 		}
@@ -366,6 +373,7 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 					if (count_empty == 1) {
 						add_number(puzzle, row, empty_coordinate, -1);
 					}
+					printf("identieke rij\n");
 					return 1;
 				}
 			}
@@ -378,13 +386,23 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 					if (count_empty == 1) {
 						add_number(puzzle, empty_coordinate_C, col, -1);
 					}
+					printf("identieke col\n");
 					return 1;
 				}
 			}
 		}
-	return 0;
-}
+		//Reset the values if 1 is possible
+		add_number(puzzle, row, col, -1);
+		if (count_empty == 1) {
+			add_number(puzzle, row, empty_coordinate, -1);
+		}
+		if (count_empty_C == 1) {
+			add_number(puzzle, empty_coordinate_C, col, -1);
+		}
+		return 0;
+	}
 	else {
+		printf("niet leeg\n");
 		return 1;
 	}
 }
@@ -403,8 +421,10 @@ int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
 	int changed = 1;
 	for (int i = 0; i < *puzzle->dim; i++) {
 		for (int j = 0; j < *puzzle->dim; j++) {
-			printf("%d", is_one_possible(puzzle, i, j));
-			if (is_one_possible(puzzle, i, j) != 0) {
+			int possible = is_one_possible(puzzle, i, j);
+			printf("%d", possible);
+			if (possible != 0 && puzzle->squares[i][j] == -1) {
+				printf("Hierin");
 				add_number(puzzle, i, j, 0);
 				changed = 0;
 			}
