@@ -23,11 +23,11 @@ BinaryPuzzle* init_puzzle(int dim) {
 		return NULL;
 		//exit(1);
 	}
-	BinaryPuzzle* puzzle_pointer = malloc(sizeof(BinaryPuzzle));
-	if (!puzzle_pointer) {
-		printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
-		exit(1);
-	}
+		BinaryPuzzle* puzzle_pointer = malloc(sizeof(BinaryPuzzle));
+		if (!puzzle_pointer) {
+			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
+			exit(1);
+		}
 
 	// Inits components
 	puzzle_pointer->dim = malloc(sizeof(int));
@@ -51,12 +51,25 @@ BinaryPuzzle* init_puzzle_by_pattern(char* input) {
 	else
 	{
 		int dimension = (int) sqrt(strlen(input));
-		BinaryPuzzle* puzzle_pointer = init_puzzle(dimension);
-		if (!puzzle_pointer) {
-			printf("ERROR: Creation failed\n");
-			return NULL;
+		puzzle_pointer->dim = malloc(sizeof(int));
+		if (!puzzle_pointer->dim) {
+			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
+			exit(1);
+		}
+		*(puzzle_pointer->dim) = dimension;
+		puzzle_pointer->squares = malloc(dimension*sizeof(int*));
+		puzzle_pointer->transponse = malloc(dimension*sizeof(int*));
+		if (!puzzle_pointer->squares || !puzzle_pointer->transponse) {
+			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
+			exit(1);
 		}
 		for (int i = 0; i < dimension; i++) {
+			puzzle_pointer->squares[i] = malloc(dimension*sizeof(int));
+			puzzle_pointer->transponse[i] = malloc(dimension*sizeof(int));
+			if (!puzzle_pointer->squares[i] || !puzzle_pointer->transponse[i]) {
+				printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
+				exit(1);
+			}
 			for (int j = 0; j < dimension; j++) {
 				char c = input[i*dimension + j];
 				if (c == '-') {
@@ -156,6 +169,80 @@ void add_number(BinaryPuzzle* puzzle, int row, int col, int number) {
 	//printf("row: %d col: %d nr: %d", row, col, number);
 	puzzle->squares[row][col] = number;
 	puzzle->transponse[col][row] = number;
+}
+
+int compare_arrays(int* first, int* second, int size) {
+	for (int i = 0; i < size; i++) {
+		if (first[i] != second[i]) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/*
+Returns 0 if and only if a given array is a complete, valid row for the given puzzle.
+*/
+int is_valid_row(BinaryPuzzle* puzzle, int* row, int row_number) {
+	int count_0 = 0;
+	int count_1 = 1;
+	for (int i = 0; i < *puzzle->dim; i++) {
+		if (row[i] == 0) {
+			count_0++;
+		}
+		if (row[i] == 1) {
+			count_1;
+		}
+		if (row[i] == -1) {
+			return 1;
+		}
+		if (i >= 1 && i < *puzzle->dim - 1) {
+			if (row[i - 1] == row[i] && row[i] == row[i + 1]) {
+				return 1;
+			}
+		}
+	}
+	if (count_0 != *puzzle->dim / 2 || count_1 != *puzzle->dim / 2) {
+		return 1;
+	}
+	//Check for duplicate rows
+	for (int k = 0; k < *puzzle->dim; k++) {
+		if (compare_arrays(row, puzzle->squares[k], *puzzle->dim) == 0 && row_number != k) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/*
+Returns 0 if and only if a given array is still a possibility for a valid row in the given puzzle.
+*/
+int is_still_possible_row(BinaryPuzzle* puzzle, int* row, int row_number) {
+	int count_0 = 0;
+	int count_1 = 1;
+	for (int i = 0; i < *puzzle->dim; i++) {
+		if (row[i] == 0) {
+			count_0++;
+		}
+		if (row[i] == 1) {
+			count_1;
+		}
+		if (i >= 1 && i < *puzzle->dim - 1) {
+			if (row[i - 1] == row[i] && row[i] == row[i + 1] && row[i] != -1) {
+				return 1;
+			}
+		}
+	}
+	if (count_0 > *puzzle->dim / 2 || count_1 > *puzzle->dim / 2) {
+		return 1;
+	}
+	//Check for duplicate rows
+	for (int k = 0; k < *puzzle->dim; k++) {
+		if (compare_arrays(row, puzzle->squares[k], *puzzle->dim) == 0 && row_number != k && is_valid_row(puzzle,puzzle->squares[k],k) == 0) {
+			return 1;
+		}
+	}
+	return 0;
 }
 
 int find_pairs(BinaryPuzzle* puzzle) {
@@ -305,22 +392,12 @@ int complete_RC(BinaryPuzzle* puzzle) {
 	return changed;
 }
 
-int compare_arrays(int* first, int* second, int size) {
-	for (int i = 0; i < size; i++) {
-		if (first[i] != second[i]) {
-			return 1;
-		}
-	}
-	return 0;
-}
-
-//DIT WERKT NOG NIET HELEMAAL!!
 /*
 Returns 0 if and only if a 1 can be filled in in the given square
 based on the three rules of binary puzzles.
 */
+//NIETS VERVANGEN DOOR is_still_possible row. DIT GAAT VERTRAGEN!!
 int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
-	int possible = 1;
 	if (puzzle->squares[row][col] == -1) {
 		add_number(puzzle, row, col, 1);
 		//Check for 3 consecutive ones
@@ -374,7 +451,7 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 			}
 		}
 		if (count_empty_C == 1) {
-			if (count_1 == *puzzle->dim / 2) {
+			if (count_1_C == *puzzle->dim / 2) {
 				add_number(puzzle, empty_coordinate_C, col, 0);
 			}
 			else {
@@ -398,12 +475,20 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 			for (int k = 0; k < *puzzle->dim; k++) {
 				if (compare_arrays(puzzle->transponse[col], puzzle->transponse[k], *puzzle->dim) == 0 && k != col) {
 					add_number(puzzle, row, col, -1);
-					if (count_empty == 1) {
+					if (count_empty_C == 1) {
 						add_number(puzzle, empty_coordinate_C, col, -1);
 					}
 					return 1;
 				}
 			}
+		}
+		//Reset the values if 1 is possible
+		add_number(puzzle, row, col, -1);
+		if (count_empty == 1) {
+			add_number(puzzle, row, empty_coordinate, -1);
+			}
+		if (count_empty_C == 1) {
+			add_number(puzzle, empty_coordinate_C, col, -1);
 		}
 	return 0;
 }
@@ -413,36 +498,132 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 }
 
 /*
-IS DIT NODIG????
 Returns 0 if and only if a 0 can be filled in in the given square
 based on the three rules of binary puzzles.
 */
+//NIETS VERVANGEN DOOR is_still_possible row. DIT GAAT VERTRAGEN!!
 int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
+	if (puzzle->squares[row][col] == -1) {
+		add_number(puzzle, row, col, 0);
+		//Check for 3 consecutive zeros
+		int row_first = col - 1;
+		int row_third = col + 1;
+		int col_first = row - 1;
+		int col_third = row + 1;
+		if (row_first >= 0 && row_third < *puzzle->dim && puzzle->squares[row][row_first] == 0 && puzzle->squares[row][row_third] == 0) {
+			add_number(puzzle, row, col, -1);
+			return 1;
+		}
+		if (col_first >= 0 && col_third < *puzzle->dim && puzzle->transponse[col][col_first] == 0 && puzzle->transponse[col][col_third] == 0) {
+			add_number(puzzle, row, col, -1);
+			return 1;
+		}
+
+		int count_empty = 0;
+		int count_0 = 0;
+		int empty_coordinate = -1;
+		int count_empty_C = 0;
+		int count_0_C = 0;
+		int empty_coordinate_C = -1;
+		for (int i = 0; i < *puzzle->dim; i++) {
+			if (puzzle->squares[row][i] == -1) {
+				count_empty++;
+				empty_coordinate = i;
+			}
+			if (puzzle->squares[row][i] == 0) {
+				count_0++;
+			}
+			if (puzzle->transponse[col][i] == -1) {
+				count_empty_C++;
+				empty_coordinate_C = i;
+			}
+			if (puzzle->transponse[col][i] == 0) {
+				count_0_C++;
+			}
+		}
+		//Check number of zeros
+		if (count_0 > *puzzle->dim / 2 || count_0_C > *puzzle->dim / 2) {
+			add_number(puzzle, row, col, -1);
+			return 1;
+		}
+		//Fill the rows/cols if we assume a 0 was entered in the given square
+		if (count_empty == 1) {
+			if (count_0 == *puzzle->dim / 2) {
+				add_number(puzzle, row, empty_coordinate, 1);
+			}
+			else {
+				add_number(puzzle, row, empty_coordinate, 0);
+			}
+		}
+		if (count_empty_C == 1) {
+			if (count_0_C == *puzzle->dim / 2) {
+				add_number(puzzle, empty_coordinate_C, col, 1);
+			}
+			else {
+				add_number(puzzle, empty_coordinate_C, col, 0);
+			}
+		}
+		//Check for identical rows if the count of empty squares is one or zero
+		if (count_empty == 0 || count_empty == 1) {
+			for (int k = 0; k < *puzzle->dim; k++) {
+				if (compare_arrays(puzzle->squares[row], puzzle->squares[k], *puzzle->dim) == 0 && k != row) {
+					add_number(puzzle, row, col, -1);
+					if (count_empty == 1) {
+						add_number(puzzle, row, empty_coordinate, -1);
+					}
+					return 1;
+				}
+			}
+		}
+		//Check for identical cols if the count of empty squares is one or zero.
+		if (count_empty_C == 0 || count_empty_C == 1) {
+			for (int k = 0; k < *puzzle->dim; k++) {
+				if (compare_arrays(puzzle->transponse[col], puzzle->transponse[k], *puzzle->dim) == 0 && k != col) {
+					add_number(puzzle, row, col, -1);
+					if (count_empty_C == 1) {
+						add_number(puzzle, empty_coordinate_C, col, -1);
+					}
 	return 1;
 }
+			}
+		}
+		//Reset the values if 0 is possible
+		add_number(puzzle, row, col, -1);
+		if (count_empty == 1) {
+			add_number(puzzle, row, empty_coordinate, -1);
+		}
+		if (count_empty_C == 1) {
+			add_number(puzzle, empty_coordinate_C, col, -1);
+		}
+		return 0;
+	}
+	else {
+		return 1;
+	}
+}
 
-//WERKT NOG NIET HELEMAAL...
 int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
 	int changed = 1;
 	for (int i = 0; i < *puzzle->dim; i++) {
 		for (int j = 0; j < *puzzle->dim; j++) {
-			printf("%d", is_one_possible(puzzle, i, j));
-			if (is_one_possible(puzzle, i, j) != 0) {
+			if (is_one_possible(puzzle, i, j) != 0 && puzzle->squares[i][j] == -1) {
 				add_number(puzzle, i, j, 0);
 				changed = 0;
 			}
+			if (is_zero_possible(puzzle, i, j) != 0 && puzzle->squares[i][j] == -1) {
+				add_number(puzzle, i, j, 1);
+				changed = 0;
+			}
 		}
-		printf("\n");
 	}
 	return changed;
 }
 
-//Deze methodes worden waarschijnlijk overbodig.
 int complete_half_RC(BinaryPuzzle* puzzle) {
 
 	return 0;
 }
-//Deze methode wordt waarschijnlijk overbodig
+
 int eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
 
 	return 0;
