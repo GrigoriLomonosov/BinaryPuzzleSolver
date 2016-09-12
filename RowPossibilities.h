@@ -10,7 +10,7 @@ typedef struct RowPossibilities {
 	Node* first_node;
 }RowPossibilities;
 
-RowPossibilities* init_possibilities(Node* first_node);
+RowPossibilities* init_possibilities(Node* first_node, int* number_of_poss, int* row_number, int* row_length);
 void free_possibilities(RowPossibilities* poss);
 void print_possibilities(RowPossibilities* poss);
 

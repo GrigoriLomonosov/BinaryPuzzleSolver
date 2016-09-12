@@ -11,7 +11,7 @@ typedef struct Node {
 	int* arr_length;
 }Node;
 
-void init_node(int* arr, Node* next, unsigned int* arr_length);
+Node* init_node(int* arr, Node* next, unsigned int* arr_length);
 void free_node(Node* node);
 
 int add_new_next(Node* current, Node* new_next);

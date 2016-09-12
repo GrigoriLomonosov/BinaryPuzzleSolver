@@ -254,7 +254,7 @@ int find_pairs(BinaryPuzzle* puzzle) {
 			//Check row
 			if (puzzle->squares[i][j] == puzzle->squares[i][j - 1] && 
 				(puzzle->squares[i][j] == 0 || puzzle->squares[i][j] == 1)) {
-					//0 becomes 1, 1 becomes 0
+				//0 becomes 1, 1 becomes 0
 				if (j - 2 >= 0 && puzzle->squares[i][j - 2] == -1) {
 					add_number(puzzle, i, j - 2, (puzzle->squares[i][j] + 1) % 2);
 					changed = 0;

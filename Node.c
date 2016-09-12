@@ -1,7 +1,7 @@
 
 #include "Node.h"
 
-void init_node(int* arr, Node* next, unsigned int arr_length) {
+Node* init_node(int* arr, Node* next, unsigned int arr_length) {
 	Node* node = malloc(sizeof(Node));
 	if (!node) {
 		printf("ERROR: Allocation failed, insufficient memory for Node?\n");
