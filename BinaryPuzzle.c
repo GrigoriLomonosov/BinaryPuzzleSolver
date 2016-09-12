@@ -250,26 +250,32 @@ int is_still_possible_row(BinaryPuzzle* puzzle, int* row, int row_number) {
 int find_pairs(BinaryPuzzle* puzzle) {
 	int changed = 1;
 	for (int i = 0; i < *puzzle->dim; i++) {
-		for (int j = 1; j < *puzzle->dim-2; j++) {
+		for (int j = 1; j < *puzzle->dim; j++) {
 			//Check row
-			if (puzzle->squares[i][j - 1] == -1 && 
-				puzzle->squares[i][j] == puzzle->squares[i][j + 1] && 
-				(puzzle->squares[i][j] == 0 || puzzle->squares[i][j] == 1) && 
-				puzzle->squares[i][j + 2] == -1) {
+			if (puzzle->squares[i][j] == puzzle->squares[i][j - 1] && 
+				(puzzle->squares[i][j] == 0 || puzzle->squares[i][j] == 1)) {
 					//0 becomes 1, 1 becomes 0
-					add_number(puzzle, i, j - 1, (puzzle->squares[i][j] + 1) % 2);
-					add_number(puzzle, i, j + 2, (puzzle->squares[i][j] + 1) % 2);
+				if (j - 2 >= 0 && puzzle->squares[i][j - 2] == -1) {
+					add_number(puzzle, i, j - 2, (puzzle->squares[i][j] + 1) % 2);
 					changed = 0;
+				}
+				if (j + 1 < *puzzle->dim && puzzle->squares[i][j + 1] == -1) {
+					add_number(puzzle, i, j + 1, (puzzle->squares[i][j] + 1) % 2);
+					changed = 0;
+				}
 			}
 			//Check col
-			if (puzzle->transponse[i][j - 1] == -1 &&
-				puzzle->transponse[i][j] == puzzle->transponse[i][j + 1] &&
-				(puzzle->transponse[i][j] == 0 || puzzle->transponse[i][j] == 1) &&
-				puzzle->transponse[i][j + 2] == -1) {
+			if (puzzle->transponse[i][j] == puzzle->transponse[i][j -1] &&
+				(puzzle->transponse[i][j] == 0 || puzzle->transponse[i][j] == 1)) {
 				//0 becomes 1, 1 becomes 0
-				add_number(puzzle, j - 1, i, (puzzle->transponse[i][j] + 1) % 2);
-				add_number(puzzle, j + 2, i, (puzzle->transponse[i][j] + 1) % 2);
-				changed = 0;
+				if (j - 2 >= 0 && puzzle->transponse[i][j - 2] == -1) {
+					add_number(puzzle, j - 2, i, (puzzle->transponse[i][j] + 1) % 2);
+					changed = 0;
+				}
+				if (j + 1 < *puzzle->dim && puzzle->transponse[i][j + 1] == -1) {
+					add_number(puzzle, j + 1, i, (puzzle->transponse[i][j] + 1) % 2);
+					changed = 0;
+				}
 			}
 		}
 	}
