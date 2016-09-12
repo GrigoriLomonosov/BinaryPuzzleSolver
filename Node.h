@@ -6,14 +6,15 @@
 
 //Node in a linked list to keep track of the possibilities in a given row.
 typedef struct Node {
-	int* x;
+	int* arr;
 	struct Node *next;
+	int* arr_length;
 }Node;
 
-void init_node(int* arr, Node* next);
+void init_node(int* arr, Node* next, unsigned int* arr_length);
 void free_node(Node* node);
 
-int add_new_next(Node* new_next);
+int add_new_next(Node* current, Node* new_next);
 
 void print_node(Node* node);
 
