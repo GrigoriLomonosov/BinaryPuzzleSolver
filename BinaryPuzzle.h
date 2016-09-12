@@ -25,14 +25,15 @@ typedef struct BinaryPuzzle {
 /*
 Only even dimensions between the boundaries are allowed. The input should only contain 0,1,-.
 */
-BinaryPuzzle* init_puzzle(char* input);
+BinaryPuzzle* init_puzzle();
+BinaryPuzzle* init_puzzle_by_pattern(char* input);
 void free_puzzle(BinaryPuzzle* puzzle);
 void print_puzzle(BinaryPuzzle* puzzle);
 
 /*
 Returns True if there is atleast 1 empty cell.
 */
-bool isEmpty(BinaryPuzzle* puzzle);
+bool hasEmptyCell(BinaryPuzzle* puzzle);
 
 
 /*
