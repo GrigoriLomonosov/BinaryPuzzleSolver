@@ -33,12 +33,24 @@ BinaryPuzzle* init_puzzle(char* input) {
 		}
 		int dimension = (int) sqrt(strlen(input));
 		puzzle_pointer->dim = malloc(sizeof(int));
+		if (!puzzle_pointer->dim) {
+			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
+			exit(1);
+		}
 		*(puzzle_pointer->dim) = dimension;
 		puzzle_pointer->squares = malloc(dimension*sizeof(int*));
 		puzzle_pointer->transponse = malloc(dimension*sizeof(int*));
+		if (!puzzle_pointer->squares || puzzle_pointer->transponse) {
+			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
+			exit(1);
+		}
 		for (int i = 0; i < dimension; i++) {
 			puzzle_pointer->squares[i] = malloc(dimension*sizeof(int));
 			puzzle_pointer->transponse[i] = malloc(dimension*sizeof(int));
+			if (!puzzle_pointer->squares[i] || puzzle_pointer->transponse[i]) {
+				printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
+				exit(1);
+			}
 			for (int j = 0; j < dimension; j++) {
 				char c = input[i*dimension + j];
 				if (c == '-') {
@@ -83,11 +95,11 @@ void print_puzzle(BinaryPuzzle* puzzle) {
 }
 
 bool isEmpty(BinaryPuzzle* puzzle) {
-
+	return false;
 }
 
 BinaryPuzzle* clone(BinaryPuzzle* puzzle) {
-
+	return NULL;
 }
 
 int compare_puzzles(BinaryPuzzle* puzzle_1, BinaryPuzzle* puzzle_2) {
