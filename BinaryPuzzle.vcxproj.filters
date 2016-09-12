@@ -21,6 +21,12 @@
     <ClInclude Include="Tester.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RowPossibilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryPuzzle.c">
@@ -30,6 +36,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestSuite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RowPossibilities.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

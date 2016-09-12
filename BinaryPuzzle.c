@@ -23,11 +23,11 @@ BinaryPuzzle* init_puzzle(int dim) {
 		return NULL;
 		//exit(1);
 	}
-		BinaryPuzzle* puzzle_pointer = malloc(sizeof(BinaryPuzzle));
-		if (!puzzle_pointer) {
-			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
-			exit(1);
-		}
+	BinaryPuzzle* puzzle_pointer = malloc(sizeof(BinaryPuzzle));
+	if (!puzzle_pointer) {
+		printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
+		exit(1);
+	}
 
 	// Create components
 	puzzle_pointer->dim = malloc(sizeof(int));
@@ -585,8 +585,8 @@ int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
 					if (count_empty_C == 1) {
 						add_number(puzzle, empty_coordinate_C, col, -1);
 					}
-	return 1;
-}
+					return 1;
+				}
 			}
 		}
 		//Reset the values if 0 is possible
