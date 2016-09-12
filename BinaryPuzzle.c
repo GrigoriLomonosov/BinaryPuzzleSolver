@@ -17,40 +17,55 @@ int check_char_in_string(char* input) {
 	}
 }
 
-BinaryPuzzle* init_puzzle(char* input) {
-	if (strlen(input)%2 != 0 || strlen(input) < pow(MIN_DIMENSION,2) || strlen(input) > pow(MAX_DIMENSION,2) || 
-		check_char_in_string(input) != 0) {
-		//printf("error: if n is the length of the inputstring, n should be even, >=36 and <= 1296, and only contain '0','1' or '-'\n");		
+BinaryPuzzle* init_puzzle(int dim) {
+	if (dim % 2 != 0 || dim < MIN_DIMENSION || dim > MAX_DIMENSION) {
+		//printf("error: if n is the length of the inputstring, n should be even, >=36 and <= 1296);		
 		return NULL;
 		//exit(1);
 	}
-	else
-	{
 		BinaryPuzzle* puzzle_pointer = malloc(sizeof(BinaryPuzzle));
 		if (!puzzle_pointer) {
 			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
 			exit(1);
 		}
+
+	// Create components
+	puzzle_pointer->dim = malloc(sizeof(int));
+	puzzle_pointer->squares = calloc(sizeof(int*),dim);
+	puzzle_pointer->transponse = calloc(sizeof(int*),dim);
+
+	if (!puzzle_pointer->dim || !puzzle_pointer->squares || !puzzle_pointer->transponse) {
+		printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
+		exit(1);
+	}
+
+	// Initialize components
+	*(puzzle_pointer->dim) = dim;
+
+	for (int i = 0; i < dim; i++) {
+		puzzle_pointer->squares[i] = calloc(sizeof(int),dim);
+		puzzle_pointer->transponse[i] = calloc(sizeof(int),dim);
+	}
+	// return
+	return puzzle_pointer;
+}
+
+BinaryPuzzle* init_puzzle_by_pattern(char* input) {
+	if (strlen(input) % 2 != 0 ||check_char_in_string(input) != 0) {
+		//printf("error: inputstring may only contain '0','1' or '-'\n");		
+		return NULL;
+		//exit(1);
+	}
+	else
+	{
 		int dimension = (int) sqrt(strlen(input));
-		puzzle_pointer->dim = malloc(sizeof(int));
-		if (!puzzle_pointer->dim) {
-			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
-			exit(1);
+		BinaryPuzzle* puzzle_pointer = init_puzzle(dimension);
+		if (!puzzle_pointer) {
+			printf("ERROR: Creation failed\n");
+			return NULL;
 		}
-		*(puzzle_pointer->dim) = dimension;
-		puzzle_pointer->squares = malloc(dimension*sizeof(int*));
-		puzzle_pointer->transponse = malloc(dimension*sizeof(int*));
-		if (!puzzle_pointer->squares || !puzzle_pointer->transponse) {
-			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
-			exit(1);
-		}
+
 		for (int i = 0; i < dimension; i++) {
-			puzzle_pointer->squares[i] = malloc(dimension*sizeof(int));
-			puzzle_pointer->transponse[i] = malloc(dimension*sizeof(int));
-			if (!puzzle_pointer->squares[i] || !puzzle_pointer->transponse[i]) {
-				printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
-				exit(1);
-			}
 			for (int j = 0; j < dimension; j++) {
 				char c = input[i*dimension + j];
 				if (c == '-') {
@@ -87,19 +102,40 @@ void free_puzzle(BinaryPuzzle* puzzle) {
 void print_puzzle(BinaryPuzzle* puzzle) {
 	for (int i = 0; i < *puzzle->dim; i++) {
 		for (int j = 0; j < *puzzle->dim; j++) {
-			printf("%d", puzzle->squares[i][j]);
+			// print 1,0 or - only
+			if(puzzle->squares[i][j]==0 || puzzle->squares[i][j] == 1)
+				printf("%d", puzzle->squares[i][j]); 
+			else
+				printf("%c", '-');
 		}
 		printf("\n");
 	}
 	printf("\n");
 }
 
-bool isEmpty(BinaryPuzzle* puzzle) {
+bool hasEmptyCell(BinaryPuzzle* puzzle) {
+	for (int i = 0; i < *puzzle->dim; i++) {
+		for (int j = 0; j < *puzzle->dim; j++) {
+			int value = puzzle->squares[i][j];
+			if (value != 0 && value != 1)
+				return true; 
+		}
+	}
 	return false;
 }
 
 BinaryPuzzle* clone(BinaryPuzzle* puzzle) {
-	return NULL;
+	if (puzzle->squares == NULL ||puzzle ->transponse == NULL || puzzle->dim==NULL)
+		return NULL;
+	BinaryPuzzle* clone = init_puzzle(*puzzle->dim);
+	if (!clone)
+		return NULL;
+	for (int i = 0; i < *puzzle->dim; i++) {
+		for (int j = 0; j < *puzzle->dim; j++) {
+			add_number(clone, i, j, puzzle->squares[i][j]);
+		}
+	}
+	return clone;
 }
 
 int compare_puzzles(BinaryPuzzle* puzzle_1, BinaryPuzzle* puzzle_2) {
@@ -139,7 +175,9 @@ int compare_arrays(int* first, int* second, int size) {
 	for (int i = 0; i < size; i++) {
 		if (first[i] != second[i]) {
 			return 1;
+			
 		}
+		
 	}
 	return 0;
 }
@@ -450,12 +488,12 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 		add_number(puzzle, row, col, -1);
 		if (count_empty == 1) {
 			add_number(puzzle, row, empty_coordinate, -1);
-		}
+			}
 		if (count_empty_C == 1) {
 			add_number(puzzle, empty_coordinate_C, col, -1);
 		}
-		return 0;
-	}
+	return 0;
+}
 	else {
 		return 1;
 	}
@@ -547,8 +585,8 @@ int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
 					if (count_empty_C == 1) {
 						add_number(puzzle, empty_coordinate_C, col, -1);
 					}
-					return 1;
-				}
+	return 1;
+}
 			}
 		}
 		//Reset the values if 0 is possible
@@ -599,11 +637,12 @@ void solve_puzzle(BinaryPuzzle* original) {
 
 	// With every iteration we expect to fill in atleast 1 (empty) cell. 
 	int maxIter = *puzzle->dim * *puzzle->dim, counter=0;
-	while ( (!isEmpty(puzzle)) && counter<maxIter ) {
+	while ( (hasEmptyCell(puzzle)) && counter<maxIter ) {
 		// CAN BE OPTIMIZED : Try every single move
 		find_pairs(puzzle);
 		avoid_trios(puzzle);
 		complete_RC(puzzle);
+		counter++;
 	}
 	//
 	original = puzzle;

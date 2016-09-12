@@ -1,13 +1,13 @@
 #include "Tester.h"
 
 void test_init_puzzle() {
-	assert(init_puzzle(EMPTY_Q) == NULL);
-	assert(init_puzzle(INVALID_Q1) == NULL);
-	assert(init_puzzle(INVALID_Q2) == NULL);
-	assert(init_puzzle(INVALID_Q3) == NULL);
-	assert(init_puzzle(INVALID_Q4) == NULL);
-	BinaryPuzzle* puzzle_1 = init_puzzle(FULL_Q1);
-	BinaryPuzzle* puzzle_2 = init_puzzle(FULL_Q2);
+	assert(init_puzzle_by_pattern(EMPTY_Q) == NULL);
+	assert(init_puzzle_by_pattern(INVALID_Q1) == NULL);
+	assert(init_puzzle_by_pattern(INVALID_Q2) == NULL);
+	assert(init_puzzle_by_pattern(INVALID_Q3) == NULL);
+	assert(init_puzzle_by_pattern(INVALID_Q4) == NULL);
+	BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(FULL_Q1);
+	BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(FULL_Q2);
 	assert(puzzle_1!=NULL);
 	assert(puzzle_2!=NULL);
 	assert(*puzzle_1->dim == 6);
@@ -107,9 +107,9 @@ void test_find_pairs() {
 	char* questions[] = { Q1, SENTINEL };
 	char* answers[] = { A1, SENTINEL };
 	for (int i = 0; strcmp(questions[i],SENTINEL) != 0; i++) {
-		BinaryPuzzle* puzzle_1 = init_puzzle(questions[i]);
+		BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(questions[i]);
 		find_pairs(puzzle_1);
-		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
+		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
 		printf("Puzzle_nr: %d passed find_pairs test.\n", i);
 		free_puzzle(puzzle_1);
@@ -122,9 +122,9 @@ void test_avoid_trios() {
 	char* questions[] = { Q2, SENTINEL };
 	char* answers[] = { A2, SENTINEL };
 	for (int i = 0; strcmp(questions[i], SENTINEL) != 0; i++) {
-		BinaryPuzzle* puzzle_1 = init_puzzle(questions[i]);
+		BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(questions[i]);
 		avoid_trios(puzzle_1);
-		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
+		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
 		printf("Puzzle_nr: %d passed avoid_trios test.\n", i);
 		free_puzzle(puzzle_1);
@@ -137,9 +137,9 @@ void test_complete_RC() {
 	char* questions[] = { Q3, SENTINEL };
 	char* answers[] = { A3, SENTINEL };
 	for (int i = 0; strcmp(questions[i], SENTINEL) != 0; i++) {
-		BinaryPuzzle* puzzle_1 = init_puzzle(questions[i]);
+		BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(questions[i]);
 		complete_RC(puzzle_1);
-		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
+		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
 		printf("Puzzle_nr: %d passed complete_RC test.\n", i);
 		free_puzzle(puzzle_1);
@@ -152,9 +152,9 @@ void test_eliminate_impossible_combos() {
 	char* questions[] = { Q4, SENTINEL };
 	char* answers[] = { A4, SENTINEL };
 	for (int i = 0; strcmp(questions[i], SENTINEL) != 0; i++) {
-		BinaryPuzzle* puzzle_1 = init_puzzle(questions[i]);
+		BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(questions[i]);
 		eliminate_impossible_combos(puzzle_1);
-		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
+		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
 		printf("Puzzle_nr: %d passed eliminate_impossible_combos test.\n", i);
 		free_puzzle(puzzle_1);
@@ -167,9 +167,9 @@ void test_complete_half_RC() {
 	char* questions[] = { Q5, SENTINEL };
 	char* answers[] = { A5, SENTINEL };
 	for (int i = 0; strcmp(questions[i], SENTINEL) != 0; i++) {
-		BinaryPuzzle* puzzle_1 = init_puzzle(questions[i]);
+		BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(questions[i]);
 		complete_half_RC(puzzle_1);
-		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
+		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
 		printf("Puzzle_nr: %d passed complete_half_RC test.\n", i);
 		free_puzzle(puzzle_1);
@@ -182,9 +182,9 @@ void test_eliminate_other_impossible_combos() {
 	char* questions[] = { Q6, SENTINEL };
 	char* answers[] = { A6, SENTINEL };
 	for (int i = 0; strcmp(questions[i], SENTINEL) != 0; i++) {
-		BinaryPuzzle* puzzle_1 = init_puzzle(questions[i]);
+		BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(questions[i]);
 		eliminate_other_impossible_combos(puzzle_1);
-		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
+		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
 		printf("Puzzle_nr: %d passed eliminate_other_impossible_combos test.\n", i);
 		free_puzzle(puzzle_1);
@@ -197,9 +197,9 @@ void test_general_solver() {
 	char* questions[] = { Q7, SENTINEL };
 	char* answers[] = { A7, SENTINEL };
 	for (int i = 0; strcmp(questions[i], SENTINEL) != 0; i++) {
-		BinaryPuzzle* puzzle_1 = init_puzzle(questions[i]);
+		BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(questions[i]);
 		solve_puzzle(puzzle_1);
-		BinaryPuzzle* puzzle_2 = init_puzzle(answers[i]);
+		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
 		printf("Puzzle_nr: %d passed general_solver test.\n", i);
 		free_puzzle(puzzle_1);

@@ -20,8 +20,8 @@ void run() {
 }
 
 int main() {
-	printf("Testing BinaryPuzzleSolver\n\n");
 	#ifdef _DEBUG
+	printf("Testing BinaryPuzzleSolver\n\n");
 	test();
 	#else
 	run();
