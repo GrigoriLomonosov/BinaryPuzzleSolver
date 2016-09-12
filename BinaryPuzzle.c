@@ -305,12 +305,10 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 		int col_first = row - 1;
 		int col_third = row + 1;
 		if (row_first >= 0 && row_third < *puzzle->dim && puzzle->squares[row][row_first] == 1 && puzzle->squares[row][row_third] == 1) {
-			printf("3 in de rij\n");
 			add_number(puzzle, row, col, -1);
 			return 1;
 		}
 		if (col_first >= 0 && col_third < *puzzle->dim && puzzle->transponse[col][col_first] == 1 && puzzle->transponse[col][col_third] == 1) {
-			printf("3 in de col\n");
 			add_number(puzzle, row, col, -1);
 			return 1;
 		}
@@ -339,12 +337,6 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 		}
 		//Check number of ones
 		if (count_1 > *puzzle->dim / 2 || count_1_C > *puzzle->dim / 2) {
-			if (count_1 > *puzzle->dim / 2) {
-				printf("teveel 1-en in rij\n");
-			}
-			if (count_1_C > *puzzle->dim / 2) {
-				printf("teveel 1-en in col\n");
-			}
 			add_number(puzzle, row, col, -1);
 			return 1;
 		}
@@ -358,7 +350,7 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 			}
 		}
 		if (count_empty_C == 1) {
-			if (count_1 == *puzzle->dim / 2) {
+			if (count_1_C == *puzzle->dim / 2) {
 				add_number(puzzle, empty_coordinate_C, col, 0);
 			}
 			else {
@@ -373,7 +365,6 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 					if (count_empty == 1) {
 						add_number(puzzle, row, empty_coordinate, -1);
 					}
-					printf("identieke rij\n");
 					return 1;
 				}
 			}
@@ -383,10 +374,9 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 			for (int k = 0; k < *puzzle->dim; k++) {
 				if (compare_arrays(puzzle->transponse[col], puzzle->transponse[k], *puzzle->dim) == 0 && k != col) {
 					add_number(puzzle, row, col, -1);
-					if (count_empty == 1) {
+					if (count_empty_C == 1) {
 						add_number(puzzle, empty_coordinate_C, col, -1);
 					}
-					printf("identieke col\n");
 					return 1;
 				}
 			}
@@ -402,7 +392,6 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 		return 0;
 	}
 	else {
-		printf("niet leeg\n");
 		return 1;
 	}
 }
@@ -421,12 +410,10 @@ int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
 		int col_first = row - 1;
 		int col_third = row + 1;
 		if (row_first >= 0 && row_third < *puzzle->dim && puzzle->squares[row][row_first] == 0 && puzzle->squares[row][row_third] == 0) {
-			printf("3 in de rij\n");
 			add_number(puzzle, row, col, -1);
 			return 1;
 		}
 		if (col_first >= 0 && col_third < *puzzle->dim && puzzle->transponse[col][col_first] == 0 && puzzle->transponse[col][col_third] == 0) {
-			printf("3 in de col\n");
 			add_number(puzzle, row, col, -1);
 			return 1;
 		}
@@ -455,12 +442,6 @@ int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
 		}
 		//Check number of zeros
 		if (count_0 > *puzzle->dim / 2 || count_0_C > *puzzle->dim / 2) {
-			if (count_0 > *puzzle->dim / 2) {
-				printf("teveel 1-en in rij\n");
-			}
-			if (count_0_C > *puzzle->dim / 2) {
-				printf("teveel 1-en in col\n");
-			}
 			add_number(puzzle, row, col, -1);
 			return 1;
 		}
@@ -489,7 +470,6 @@ int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
 					if (count_empty == 1) {
 						add_number(puzzle, row, empty_coordinate, -1);
 					}
-					printf("identieke rij\n");
 					return 1;
 				}
 			}
@@ -499,10 +479,9 @@ int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
 			for (int k = 0; k < *puzzle->dim; k++) {
 				if (compare_arrays(puzzle->transponse[col], puzzle->transponse[k], *puzzle->dim) == 0 && k != col) {
 					add_number(puzzle, row, col, -1);
-					if (count_empty == 1) {
+					if (count_empty_C == 1) {
 						add_number(puzzle, empty_coordinate_C, col, -1);
 					}
-					printf("identieke col\n");
 					return 1;
 				}
 			}
@@ -518,30 +497,23 @@ int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
 		return 0;
 	}
 	else {
-		printf("niet leeg\n");
 		return 1;
 	}
 }
 
-//WERKT NOG NIET HELEMAAL...
 int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
 	int changed = 1;
 	for (int i = 0; i < *puzzle->dim; i++) {
 		for (int j = 0; j < *puzzle->dim; j++) {
-			int possible = is_one_possible(puzzle, i, j);
-			//printf("%d", possible);
-			if (possible != 0 && puzzle->squares[i][j] == -1) {
-				printf("Hierin 1:");
+			if (is_one_possible(puzzle, i, j) != 0 && puzzle->squares[i][j] == -1) {
 				add_number(puzzle, i, j, 0);
 				changed = 0;
 			}
-			if (is_zero_possible(puzzle,i,j) != 0 && puzzle->squares[i][j] == -1) {
-				printf("Hierin 0:");
+			if (is_zero_possible(puzzle, i, j) != 0 && puzzle->squares[i][j] == -1) {
 				add_number(puzzle, i, j, 1);
 				changed = 0;
 			}
 		}
-		printf("\n");
 	}
 	return changed;
 }
