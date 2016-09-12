@@ -637,10 +637,11 @@ int eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
 	return 0;
 }
 
-void solve_puzzle(BinaryPuzzle* original) {
+void solve_puzzle(BinaryPuzzle** original) {
 	//Werken met een kopie om onverwachte, externe veranderingen te vermijden.
-	BinaryPuzzle* puzzle = clone(original);
-
+	BinaryPuzzle* puzzle = clone(*original);
+	if (!puzzle)
+		return;
 	// With every iteration we expect to fill in atleast 1 (empty) cell. 
 	int maxIter = *puzzle->dim * *puzzle->dim, counter=0;
 	while ( (hasEmptyCell(puzzle)) && counter<maxIter ) {
@@ -651,6 +652,6 @@ void solve_puzzle(BinaryPuzzle* original) {
 		counter++;
 	}
 	//
-	original = puzzle;
-	free(puzzle);
+	free(*original);
+	*original = puzzle;
 }

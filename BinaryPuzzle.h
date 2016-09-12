@@ -100,6 +100,6 @@ int eliminate_other_impossible_combos(BinaryPuzzle* puzzle);
 /*
 Solves a binary_puzzle
 */
-void solve_puzzle(BinaryPuzzle* puzzle);
+void solve_puzzle(BinaryPuzzle** puzzle);
 
 #endif

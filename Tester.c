@@ -198,7 +198,7 @@ void test_general_solver() {
 	char* answers[] = { A7, SENTINEL };
 	for (int i = 0; strcmp(questions[i], SENTINEL) != 0; i++) {
 		BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(questions[i]);
-		solve_puzzle(puzzle_1);
+		solve_puzzle(&puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
 		printf("Puzzle_nr: %d passed general_solver test.\n", i);
