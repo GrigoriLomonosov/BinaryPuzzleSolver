@@ -40,14 +40,14 @@ BinaryPuzzle* init_puzzle(char* input) {
 		*(puzzle_pointer->dim) = dimension;
 		puzzle_pointer->squares = malloc(dimension*sizeof(int*));
 		puzzle_pointer->transponse = malloc(dimension*sizeof(int*));
-		if (!puzzle_pointer->squares || puzzle_pointer->transponse) {
+		if (!puzzle_pointer->squares || !puzzle_pointer->transponse) {
 			printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
 			exit(1);
 		}
 		for (int i = 0; i < dimension; i++) {
 			puzzle_pointer->squares[i] = malloc(dimension*sizeof(int));
 			puzzle_pointer->transponse[i] = malloc(dimension*sizeof(int));
-			if (!puzzle_pointer->squares[i] || puzzle_pointer->transponse[i]) {
+			if (!puzzle_pointer->squares[i] || !puzzle_pointer->transponse[i]) {
 				printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
 				exit(1);
 			}
