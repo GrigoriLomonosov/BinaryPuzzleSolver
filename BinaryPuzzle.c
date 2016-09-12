@@ -644,12 +644,18 @@ void solve_puzzle(BinaryPuzzle** original) {
 		return;
 	// With every iteration we expect to fill in atleast 1 (empty) cell. 
 	int maxIter = *puzzle->dim * *puzzle->dim, counter=0;
-	while ( (hasEmptyCell(puzzle)) && counter<maxIter ) {
-		// CAN BE OPTIMIZED : Try every single move
-		find_pairs(puzzle);
-		avoid_trios(puzzle);
-		complete_RC(puzzle);
+	// If nothing changed, then all functions return 1; resulting in the sum of n ones = n 
+	bool changed = true;
+	// CAN BE OPTIMIZED : mogelijke verbetering-> Zo ver mogelijk gaan per vakje, ttz depth first van alle mogelijkheden.
+	while ( changed && counter<maxIter ) {
+		//Cheap functions
+		changed = !(find_pairs(puzzle) && avoid_trios(puzzle) && complete_RC(puzzle));
+		if (!changed) {
+			// More expensive functions
+			changed = !(eliminate_impossible_combos(puzzle) && eliminate_other_impossible_combos(puzzle));
+		}
 		counter++;
+		print_puzzle(puzzle);
 	}
 	//
 	free(*original);
