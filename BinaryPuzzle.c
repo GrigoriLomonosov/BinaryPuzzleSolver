@@ -628,8 +628,109 @@ int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
 }
 
 int complete_half_RC(BinaryPuzzle* puzzle) {
-
-	return 0;
+	int changed = 1;
+	for (int i = 0; i < *puzzle->dim; i++) {
+		int first_half_0 = 0;
+		int second_half_0 = 0;
+		int first_half_1 = 0;
+		int second_half_1 = 0;
+		int first_half_0_C = 0;
+		int second_half_0_C = 0;
+		int first_half_1_C = 0;
+		int second_half_1_C = 0;
+		for (int j = 0; j < *puzzle->dim; j++) {
+			if (puzzle->squares[i][j] == 0 && j < *puzzle->dim / 2) {
+				first_half_0++;
+			}
+			if (puzzle->squares[i][j] == 1 && j < *puzzle->dim / 2) {
+				first_half_1++;
+			}
+			if (puzzle->squares[i][j] == 0 && j >= *puzzle->dim / 2) {
+				second_half_0++;
+			}
+			if (puzzle->squares[i][j] == 1 && j >= *puzzle->dim / 2) {
+				second_half_1++;
+			}
+			if (puzzle->transponse[i][j] == 0 && j < *puzzle->dim / 2) {
+				first_half_0_C++;
+			}
+			if (puzzle->transponse[i][j] == 1 && j < *puzzle->dim / 2) {
+				first_half_1_C++;
+			}
+			if (puzzle->transponse[i][j] == 0 && j >= *puzzle->dim / 2) {
+				second_half_0_C++;
+			}
+			if (puzzle->transponse[i][j] == 1 && j >= *puzzle->dim / 2) {
+				second_half_1_C++;
+			}
+		}
+		//Check and change row
+		if (first_half_0 + first_half_1 == 0 && second_half_0 + second_half_1 == *puzzle->dim / 2) {
+			printf("Lege eerste helft");
+			//Check if max number of ones was reached. The +3-1 is needed to allow a ceiling function when dividing by three.
+			if (*puzzle->dim/2 - second_half_1 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
+				int empty_left = *puzzle->dim / 2 - 1;
+				int empty_right = 0;
+				for (int k = *puzzle->dim / 2 - 1; k >=0 ; k--) {
+					if (empty_left / 3 > *puzzle->dim / 2 - second_half_1 || empty_right / 3 > *puzzle->dim / 2 - second_half_1) {
+						add_number(puzzle, i, k, 0);
+						changed = 0;
+					}
+					empty_left--;
+					empty_right++;
+				}
+			}
+			//Check if max number of zeros was reached. 
+			if (*puzzle->dim / 2 - second_half_0 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
+				int empty_left = *puzzle->dim / 2 - 1;
+				int empty_right = 0;
+				for (int k = *puzzle->dim / 2 - 1; k >= 0; k--) {
+					if (empty_left / 3 > *puzzle->dim / 2 - second_half_0 || empty_right / 3 > *puzzle->dim / 2 - second_half_0) {
+						add_number(puzzle, i, k, 1);
+						changed = 0;
+					}
+					empty_left--;
+					empty_right++;
+				}
+			}
+		}
+		if (first_half_0 + first_half_1 == *puzzle->dim / 2 && second_half_0 + second_half_1 == 0) {
+			printf("lege 2e helft");
+			//Check if max number of ones was reached. The +3-1 is needed to allow a ceiling function when dividing by three.
+			if (*puzzle->dim / 2 - first_half_1 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
+				printf("max1");
+				int empty_left = 0;
+				int empty_right = *puzzle->dim / 2 - 1;
+				for (int k = *puzzle->dim / 2; k < *puzzle->dim; k++) {
+					printf("resterend: %d\n", *puzzle->dim / 2 - first_half_1);
+					if (empty_left / 3 > *puzzle->dim / 2 - first_half_1 || empty_right / 3 > *puzzle->dim / 2 - first_half_1) {
+						printf("hier");
+						add_number(puzzle, i, k, 0);
+						changed = 0;
+					}
+					empty_left++;
+					empty_right--;
+				}
+			}
+			//Check if max number of zeros was reached. 
+			if (*puzzle->dim / 2 - first_half_0 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
+				printf("max0");
+				int empty_left = 0;
+				int empty_right = *puzzle->dim / 2 - 1;
+				for (int k = *puzzle->dim / 2; k < *puzzle->dim; k++) {
+					if (empty_left / 3 > *puzzle->dim / 2 - first_half_0 || empty_right / 3 > *puzzle->dim / 2 - first_half_0) {
+						add_number(puzzle, i, k, 1);
+						changed = 0;
+					}
+					empty_left++;
+					empty_right--;
+				}
+			}
+		}
+		//Check col
+		//TO DO: UITWERKEN EN TESTGEVALLEN AANPASSEN.
+	}
+	return changed;
 }
 
 int eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {

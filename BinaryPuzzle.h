@@ -84,9 +84,9 @@ Returns 0 if at least one square in was filled, 1 if not.
 int eliminate_impossible_combos(BinaryPuzzle* puzzle);
 
 /*
-When the first or last n/2 squares in a row are filled with n/2-floor((n/2)/3) 1's and n%3=1, then there is only one possibility
-to fill in the remaining row. The only solution for the second half of the row is the complement of the first half. Analogue for column and 0's.
-Returns 0 if at least one column or row was completed in this manner.
+When the first or last n/2 squares in a row are filled and the other half is empty, then we can not fill in 1's in the squares that divide the other half 
+in 2 parts of which floor(k) is greater then the remaining number of 1's, with k=part/3. Analogue for columns and zero's.
+Returns 0 if and only if at least one square was filled.
 */
 int complete_half_RC(BinaryPuzzle* puzzle);
 
