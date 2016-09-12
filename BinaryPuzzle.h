@@ -79,7 +79,7 @@ int eliminate_impossible_combos(BinaryPuzzle* puzzle);
 
 /*
 When the first or last n/2 squares in a row are filled with n/2-floor((n/2)/3) 1's and n%3=1, then there is only one possibility
-to fill in the remaining row. Analogue for column and 0's.
+to fill in the remaining row. The only solution for the second half of the row is the complement of the first half. Analogue for column and 0's.
 Returns 0 if at least one column or row was completed in this manner.
 */
 int complete_half_RC(BinaryPuzzle* puzzle);
