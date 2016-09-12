@@ -518,12 +518,11 @@ int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
 	return changed;
 }
 
-//Deze methodes worden waarschijnlijk overbodig.
 int complete_half_RC(BinaryPuzzle* puzzle) {
 
 	return 0;
 }
-//Deze methode wordt waarschijnlijk overbodig
+
 int eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
 
 	return 0;

@@ -82,14 +82,14 @@ Returns 0 if at least one square in was filled, 1 if not.
 */
 int eliminate_impossible_combos(BinaryPuzzle* puzzle);
 
-/*OVERBODIG???
+/*
 When the first or last n/2 squares in a row are filled with n/2-floor((n/2)/3) 1's and n%3=1, then there is only one possibility
 to fill in the remaining row. Analogue for column and 0's.
 Returns 0 if at least one column or row was completed in this manner.
 */
 int complete_half_RC(BinaryPuzzle* puzzle);
 
-/*OVERBODIG???
+/*
 Calculates all possible combos for a row/column based on what is already filled in, in that row/column.
 Afterwards impossible combos are deleted based on the above rules. When the combos all have one (or more) square(s) in common, that square(s) is (are) filled.
 Returns 0 if at least one square was filled, 1 if not.
