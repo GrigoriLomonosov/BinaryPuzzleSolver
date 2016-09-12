@@ -41,11 +41,6 @@ Deep Copy, Duh.
 BinaryPuzzle* clone(BinaryPuzzle* puzzle);
 
 /*
-Adds a 0 or 1 or '-1' to the given square in the puzzle.
- */
-void add_number(BinaryPuzzle* puzzle, int row, int col, int number);
-
-/*
 Compares two binary_puzzles.
 Returns 0 if and only if the 2 binary_puzzles have the same dimension and every square is identical to the square of the other
 binary_puzzle with the same coordinates.

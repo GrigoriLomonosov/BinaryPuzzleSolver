@@ -135,6 +135,80 @@ void add_number(BinaryPuzzle* puzzle, int row, int col, int number) {
 	puzzle->transponse[col][row] = number;
 }
 
+int compare_arrays(int* first, int* second, int size) {
+	for (int i = 0; i < size; i++) {
+		if (first[i] != second[i]) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/*
+Returns 0 if and only if a given array is a complete, valid row for the given puzzle.
+*/
+int is_valid_row(BinaryPuzzle* puzzle, int* row, int row_number) {
+	int count_0 = 0;
+	int count_1 = 1;
+	for (int i = 0; i < *puzzle->dim; i++) {
+		if (row[i] == 0) {
+			count_0++;
+		}
+		if (row[i] == 1) {
+			count_1;
+		}
+		if (row[i] == -1) {
+			return 1;
+		}
+		if (i >= 1 && i < *puzzle->dim - 1) {
+			if (row[i - 1] == row[i] && row[i] == row[i + 1]) {
+				return 1;
+			}
+		}
+	}
+	if (count_0 != *puzzle->dim / 2 || count_1 != *puzzle->dim / 2) {
+		return 1;
+	}
+	//Check for duplicate rows
+	for (int k = 0; k < *puzzle->dim; k++) {
+		if (compare_arrays(row, puzzle->squares[k], *puzzle->dim) == 0 && row_number != k) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/*
+Returns 0 if and only if a given array is still a possibility for a valid row in the given puzzle.
+*/
+int is_still_possible_row(BinaryPuzzle* puzzle, int* row, int row_number) {
+	int count_0 = 0;
+	int count_1 = 1;
+	for (int i = 0; i < *puzzle->dim; i++) {
+		if (row[i] == 0) {
+			count_0++;
+		}
+		if (row[i] == 1) {
+			count_1;
+		}
+		if (i >= 1 && i < *puzzle->dim - 1) {
+			if (row[i - 1] == row[i] && row[i] == row[i + 1] && row[i] != -1) {
+				return 1;
+			}
+		}
+	}
+	if (count_0 > *puzzle->dim / 2 || count_1 > *puzzle->dim / 2) {
+		return 1;
+	}
+	//Check for duplicate rows
+	for (int k = 0; k < *puzzle->dim; k++) {
+		if (compare_arrays(row, puzzle->squares[k], *puzzle->dim) == 0 && row_number != k && is_valid_row(puzzle,puzzle->squares[k],k) == 0) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
 int find_pairs(BinaryPuzzle* puzzle) {
 	int changed = 1;
 	for (int i = 0; i < *puzzle->dim; i++) {
@@ -282,21 +356,12 @@ int complete_RC(BinaryPuzzle* puzzle) {
 	return changed;
 }
 
-int compare_arrays(int* first, int* second, int size) {
-	for (int i = 0; i < size; i++) {
-		if (first[i] != second[i]) {
-			return 1;
-		}
-	}
-	return 0;
-}
-
 /*
 Returns 0 if and only if a 1 can be filled in in the given square
 based on the three rules of binary puzzles.
 */
+//NIETS VERVANGEN DOOR is_still_possible row. DIT GAAT VERTRAGEN!!
 int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
-	int possible = 1;
 	if (puzzle->squares[row][col] == -1) {
 		add_number(puzzle, row, col, 1);
 		//Check for 3 consecutive ones
@@ -400,8 +465,8 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 Returns 0 if and only if a 0 can be filled in in the given square
 based on the three rules of binary puzzles.
 */
+//NIETS VERVANGEN DOOR is_still_possible row. DIT GAAT VERTRAGEN!!
 int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
-	int possible = 1;
 	if (puzzle->squares[row][col] == -1) {
 		add_number(puzzle, row, col, 0);
 		//Check for 3 consecutive zeros
