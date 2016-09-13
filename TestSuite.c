@@ -11,7 +11,7 @@ void test() {
 	test_avoid_trios();
 	test_complete_RC();
 	test_eliminate_impossible_combos();
-	test_complete_half_RC();
+	test_complete_pattern_RC();
 	//test_eliminate_other_impossible_combos();
 	//test_general_solver();
 }

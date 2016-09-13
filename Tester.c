@@ -163,12 +163,12 @@ void test_eliminate_impossible_combos() {
 	printf("Test eliminate_impossible_combos passed.\n");
 }
 
-void test_complete_half_RC() {
+void test_complete_pattern_RC() {
 	char* questions[] = { Q5, SENTINEL };
 	char* answers[] = { A5, SENTINEL };
 	for (int i = 0; strcmp(questions[i], SENTINEL) != 0; i++) {
 		BinaryPuzzle* puzzle_1 = init_puzzle_by_pattern(questions[i]);
-		complete_half_RC(puzzle_1);
+		complete_pattern_RC(puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
 		printf("Puzzle_nr: %d passed complete_half_RC test.\n", i);

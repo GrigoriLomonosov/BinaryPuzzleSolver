@@ -96,7 +96,7 @@ will always be called after find_pairs.
 Analogue for columns and zeros.
 Returns 0 if and only a square was filled.
 */
-int complete_half_RC(BinaryPuzzle* puzzle);
+int complete_pattern_RC(BinaryPuzzle* puzzle);
 
 /*
 Calculates all possible combos for a row/column based on what is already filled in, in that row/column.
