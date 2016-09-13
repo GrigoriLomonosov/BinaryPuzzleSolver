@@ -84,10 +84,17 @@ Returns 0 if at least one square in was filled, 1 if not.
 int eliminate_impossible_combos(BinaryPuzzle* puzzle);
 
 /*
-When the first or last n/2 squares in a row are filled and the maximum number of 1's is used and the other half is empty, 
-then we can not fill in a 1 in the squares that divide the other half in 2 parts of which floor(k) is greater then the remaining number of 1's, with k=part/3. 
-Also when the full half ends/starts on a zero, the last/first square of the empty half cannot be a 1. Analogue for columns and zero's.
-Returns 0 if and only if at least one square was filled.
+Searches longest pattern of consecutive empty squares in a row and counts the remaining available 1's.
+We can not fill in a 1 in the squares that divide the pattern in 2 parts of which floor(k) is greater 
+then the remaining number of 1's, with k=length(part)/3. 
+Also, when the pattern is preceded (or followed) by a 0, then there should be at least one 1 in the first (or last)
+2 squares. We then check if there are squares that divide the pattern minus the first 2 squares (and/or the last 2 squares)
+in 2 parts of which floor(k) is greater then the remaining number of 1's -1 (or -2), with k=length(part)/3. If so a 1 cannot
+be filled in. All these squares are then filled with a 0.
+The situation where the pattern is preceded (or followed) by two consecutive zeros, should not be possible as this function
+will always be called after find_pairs.
+Analogue for columns and zeros.
+Returns 0 if and only a square was filled.
 */
 int complete_half_RC(BinaryPuzzle* puzzle);
 

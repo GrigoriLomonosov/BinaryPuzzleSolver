@@ -627,108 +627,221 @@ int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
 	return changed;
 }
 
+/*Checks whether a number can be placed at a given index in a pattern of consecutive empty squares, with a given
+number of remaining numbers. If this is not possible, the opposite value is entered.
+Returns 0 if and only if a number was filled in.
+*/
+//int check_poss(int length_interval, int remaining, int index) {
+//	return (length_interval-index) / 3 <= remaining && index / 3 <= remaining;
+//}
+int check_poss(BinaryPuzzle* puzzle, int length_interval, int remaining, int index, int row_number, int opposite_value) {
+	int changed = 1;
+	for (int k = 0; k < length_interval; k++) {
+		if ((length_interval - k) / 3 > remaining || k / 3 > remaining) {
+			add_number(puzzle, row_number, k + index, opposite_value);
+			changed = 0;
+		}
+	}
+	return changed;
+}
+
 int complete_half_RC(BinaryPuzzle* puzzle) {
 	int changed = 1;
 	for (int i = 0; i < *puzzle->dim; i++) {
-		int first_half_0 = 0;
-		int second_half_0 = 0;
-		int first_half_1 = 0;
-		int second_half_1 = 0;
-		int first_half_0_C = 0;
-		int second_half_0_C = 0;
-		int first_half_1_C = 0;
-		int second_half_1_C = 0;
+		//Variables for row
+		int start_index = 0;
+		int pattern_length = 0;
+		int max_pattern_length = 0;
+		int max_pattern_start_index = 0;
+		int number_used_0 = 0;
+		int number_used_1 = 0;
+		//Variables for col
+
 		for (int j = 0; j < *puzzle->dim; j++) {
-			if (puzzle->squares[i][j] == 0 && j < *puzzle->dim / 2) {
-				first_half_0++;
+			if (puzzle->squares[i][j] == 0) {
+				number_used_0++;
+				pattern_length = 0;
+				start_index = j + 1;
 			}
-			if (puzzle->squares[i][j] == 1 && j < *puzzle->dim / 2) {
-				first_half_1++;
+			if (puzzle->squares[i][j] == 1) {
+				number_used_1++;
+				pattern_length = 0;
+				start_index = j + 1;
 			}
-			if (puzzle->squares[i][j] == 0 && j >= *puzzle->dim / 2) {
-				second_half_0++;
-			}
-			if (puzzle->squares[i][j] == 1 && j >= *puzzle->dim / 2) {
-				second_half_1++;
-			}
-			if (puzzle->transponse[i][j] == 0 && j < *puzzle->dim / 2) {
-				first_half_0_C++;
-			}
-			if (puzzle->transponse[i][j] == 1 && j < *puzzle->dim / 2) {
-				first_half_1_C++;
-			}
-			if (puzzle->transponse[i][j] == 0 && j >= *puzzle->dim / 2) {
-				second_half_0_C++;
-			}
-			if (puzzle->transponse[i][j] == 1 && j >= *puzzle->dim / 2) {
-				second_half_1_C++;
-			}
-		}
-		//Check and change row
-		if (first_half_0 + first_half_1 == 0 && second_half_0 + second_half_1 == *puzzle->dim / 2) {
-			printf("Lege eerste helft");
-			//Check if max number of ones was reached. The +3-1 is needed to allow a ceiling function when dividing by three.
-			if (*puzzle->dim/2 - second_half_1 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
-				int empty_left = *puzzle->dim / 2 - 1;
-				int empty_right = 0;
-				for (int k = *puzzle->dim / 2 - 1; k >=0 ; k--) {
-					if (empty_left / 3 > *puzzle->dim / 2 - second_half_1 || empty_right / 3 > *puzzle->dim / 2 - second_half_1) {
-						add_number(puzzle, i, k, 0);
-						changed = 0;
-					}
-					empty_left--;
-					empty_right++;
-				}
-			}
-			//Check if max number of zeros was reached. 
-			if (*puzzle->dim / 2 - second_half_0 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
-				int empty_left = *puzzle->dim / 2 - 1;
-				int empty_right = 0;
-				for (int k = *puzzle->dim / 2 - 1; k >= 0; k--) {
-					if (empty_left / 3 > *puzzle->dim / 2 - second_half_0 || empty_right / 3 > *puzzle->dim / 2 - second_half_0) {
-						add_number(puzzle, i, k, 1);
-						changed = 0;
-					}
-					empty_left--;
-					empty_right++;
+			if (puzzle->squares[i][j] == -1) {
+				pattern_length++;
+				if (pattern_length > max_pattern_length) {
+					max_pattern_length = pattern_length;
+					max_pattern_start_index = start_index;
 				}
 			}
 		}
-		if (first_half_0 + first_half_1 == *puzzle->dim / 2 && second_half_0 + second_half_1 == 0) {
-			printf("lege 2e helft");
-			//Check if max number of ones was reached. The +3-1 is needed to allow a ceiling function when dividing by three.
-			if (*puzzle->dim / 2 - first_half_1 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
-				printf("max1");
-				int empty_left = 0;
-				int empty_right = *puzzle->dim / 2 - 1;
-				for (int k = *puzzle->dim / 2; k < *puzzle->dim; k++) {
-					printf("resterend: %d\n", *puzzle->dim / 2 - first_half_1);
-					if (empty_left / 3 > *puzzle->dim / 2 - first_half_1 || empty_right / 3 > *puzzle->dim / 2 - first_half_1) {
-						printf("hier");
-						add_number(puzzle, i, k, 0);
-						changed = 0;
+		printf("pattern_length: %d, startindex: %d, gebruikte0: %d, gebruikte1: %d\n", max_pattern_length, max_pattern_start_index, number_used_0, number_used_1);
+		
+		//Try to fill the pattern with the number that was used the most, as there are fewer possibilities left.
+		if (number_used_1 > number_used_0 && max_pattern_length > 2) {
+			//Followed and preceded by zero
+			if (max_pattern_start_index > 0
+				&& max_pattern_start_index + max_pattern_length < *puzzle->dim - 1
+				&& puzzle->squares[i][max_pattern_start_index - 1] == 0
+				&& puzzle->squares[i][max_pattern_start_index + max_pattern_length - 1] == 0) {
+				if (max_pattern_length == 3) {
+					if (*puzzle->dim / 2 - number_used_1 == 1) {
+						add_number(puzzle, i, max_pattern_start_index, 0);
+						add_number(puzzle, i, max_pattern_start_index + 1, 1);
+						add_number(puzzle, i, max_pattern_start_index + 2, 0);
 					}
-					empty_left++;
-					empty_right--;
+				}
+				else {
+					max_pattern_start_index += 2;
+					number_used_1 += 2;
+					max_pattern_length -= 4;
+					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - number_used_1, max_pattern_start_index, i, 0);
 				}
 			}
-			//Check if max number of zeros was reached. 
-			if (*puzzle->dim / 2 - first_half_0 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
-				printf("max0");
-				int empty_left = 0;
-				int empty_right = *puzzle->dim / 2 - 1;
-				for (int k = *puzzle->dim / 2; k < *puzzle->dim; k++) {
-					if (empty_left / 3 > *puzzle->dim / 2 - first_half_0 || empty_right / 3 > *puzzle->dim / 2 - first_half_0) {
-						add_number(puzzle, i, k, 1);
+			//Preceded by zero
+			else if (max_pattern_start_index > 0 && puzzle->squares[i][max_pattern_start_index - 1] == 0) {
+				if (max_pattern_length == 3) {
+					if (*puzzle->dim / 2 - number_used_1 == 1) {
+						add_number(puzzle, i, max_pattern_start_index + 2, 0);
 						changed = 0;
 					}
-					empty_left++;
-					empty_right--;
 				}
+				else {
+					max_pattern_start_index += 2;
+					number_used_1 += 1;
+					max_pattern_length -= 2;
+					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - number_used_1, max_pattern_start_index, i, 0);
+				}
+			}
+			//Followed by zero
+			else if (max_pattern_start_index < *puzzle->dim - 1 && puzzle->squares[i][max_pattern_start_index - 1] == 0) {
+				if (max_pattern_length == 3) {
+					if (*puzzle->dim / 2 - number_used_1 == 1) {
+						add_number(puzzle, i, max_pattern_start_index, 0);
+						changed = 0;
+					}
+				}
+				else {
+					number_used_1 += 1;
+					max_pattern_length -= 2;
+					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - number_used_1, max_pattern_start_index, i, 0);
+				}
+			}
+			//Not followed or preceded by zero
+			else {
+				changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - number_used_1, max_pattern_start_index, i, 0);
 			}
 		}
-		//Check col
-		//TO DO: UITWERKEN EN TESTGEVALLEN AANPASSEN.
+		
+
+
+
+		else if (number_used_1 < number_used_0) {
+
+		}
+
+		//Check if pattern is preceded or followed by the opposite number
+
+		//int first_half_0 = 0;
+		//int second_half_0 = 0;
+		//int first_half_1 = 0;
+		//int second_half_1 = 0;
+		//int first_half_0_C = 0;
+		//int second_half_0_C = 0;
+		//int first_half_1_C = 0;
+		//int second_half_1_C = 0;
+		//for (int j = 0; j < *puzzle->dim; j++) {
+		//	if (puzzle->squares[i][j] == 0 && j < *puzzle->dim / 2) {
+		//		first_half_0++;
+		//	}
+		//	if (puzzle->squares[i][j] == 1 && j < *puzzle->dim / 2) {
+		//		first_half_1++;
+		//	}
+		//	if (puzzle->squares[i][j] == 0 && j >= *puzzle->dim / 2) {
+		//		second_half_0++;
+		//	}
+		//	if (puzzle->squares[i][j] == 1 && j >= *puzzle->dim / 2) {
+		//		second_half_1++;
+		//	}
+		//	if (puzzle->transponse[i][j] == 0 && j < *puzzle->dim / 2) {
+		//		first_half_0_C++;
+		//	}
+		//	if (puzzle->transponse[i][j] == 1 && j < *puzzle->dim / 2) {
+		//		first_half_1_C++;
+		//	}
+		//	if (puzzle->transponse[i][j] == 0 && j >= *puzzle->dim / 2) {
+		//		second_half_0_C++;
+		//	}
+		//	if (puzzle->transponse[i][j] == 1 && j >= *puzzle->dim / 2) {
+		//		second_half_1_C++;
+		//	}
+		//}
+		////Check and change row
+		//if (first_half_0 + first_half_1 == 0 && second_half_0 + second_half_1 == *puzzle->dim / 2) {
+		//	printf("Lege eerste helft");
+		//	//Check if max number of ones was reached. The +3-1 is needed to allow a ceiling function when dividing by three.
+		//	if (*puzzle->dim/2 - second_half_1 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
+		//		int empty_left = *puzzle->dim / 2 - 1;
+		//		int empty_right = 0;
+		//		for (int k = *puzzle->dim / 2 - 1; k >=0 ; k--) {
+		//			if (empty_left / 3 > *puzzle->dim / 2 - second_half_1 || empty_right / 3 > *puzzle->dim / 2 - second_half_1) {
+		//				add_number(puzzle, i, k, 0);
+		//				changed = 0;
+		//			}
+		//			empty_left--;
+		//			empty_right++;
+		//		}
+		//	}
+		//	//Check if max number of zeros was reached. 
+		//	if (*puzzle->dim / 2 - second_half_0 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
+		//		int empty_left = *puzzle->dim / 2 - 1;
+		//		int empty_right = 0;
+		//		for (int k = *puzzle->dim / 2 - 1; k >= 0; k--) {
+		//			if (empty_left / 3 > *puzzle->dim / 2 - second_half_0 || empty_right / 3 > *puzzle->dim / 2 - second_half_0) {
+		//				add_number(puzzle, i, k, 1);
+		//				changed = 0;
+		//			}
+		//			empty_left--;
+		//			empty_right++;
+		//		}
+		//	}
+		//}
+		//if (first_half_0 + first_half_1 == *puzzle->dim / 2 && second_half_0 + second_half_1 == 0) {
+		//	printf("lege 2e helft");
+		//	//Check if max number of ones was reached. The +3-1 is needed to allow a ceiling function when dividing by three.
+		//	if (*puzzle->dim / 2 - first_half_1 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
+		//		printf("max1");
+		//		int empty_left = 0;
+		//		int empty_right = *puzzle->dim / 2 - 1;
+		//		for (int k = *puzzle->dim / 2; k < *puzzle->dim; k++) {
+		//			printf("resterend: %d\n", *puzzle->dim / 2 - first_half_1);
+		//			if (empty_left / 3 > *puzzle->dim / 2 - first_half_1 || empty_right / 3 > *puzzle->dim / 2 - first_half_1) {
+		//				printf("hier");
+		//				add_number(puzzle, i, k, 0);
+		//				changed = 0;
+		//			}
+		//			empty_left++;
+		//			empty_right--;
+		//		}
+		//	}
+		//	//Check if max number of zeros was reached. 
+		//	if (*puzzle->dim / 2 - first_half_0 == (*puzzle->dim / 2) - ((*puzzle->dim + 3 - 1) / 3)) {
+		//		printf("max0");
+		//		int empty_left = 0;
+		//		int empty_right = *puzzle->dim / 2 - 1;
+		//		for (int k = *puzzle->dim / 2; k < *puzzle->dim; k++) {
+		//			if (empty_left / 3 > *puzzle->dim / 2 - first_half_0 || empty_right / 3 > *puzzle->dim / 2 - first_half_0) {
+		//				add_number(puzzle, i, k, 1);
+		//				changed = 0;
+		//			}
+		//			empty_left++;
+		//			empty_right--;
+		//		}
+		//	}
+		//}
+		////Check col
+		////TO DO: UITWERKEN EN TESTGEVALLEN AANPASSEN.
 	}
 	return changed;
 }
