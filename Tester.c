@@ -171,11 +171,11 @@ void test_complete_pattern_RC() {
 		complete_pattern_RC(puzzle_1);
 		BinaryPuzzle* puzzle_2 = init_puzzle_by_pattern(answers[i]);
 		assert(compare_puzzles(puzzle_1, puzzle_2) == 0);
-		printf("Puzzle_nr: %d passed complete_half_RC test.\n", i);
+		printf("Puzzle_nr: %d passed complete_pattern_RC test.\n", i);
 		free_puzzle(puzzle_1);
 		free_puzzle(puzzle_2);
 	}
-	printf("Test complete_half_RC passed.\n");
+	printf("Test complete_pattern_RC passed.\n");
 }
 
 void test_eliminate_other_impossible_combos() {

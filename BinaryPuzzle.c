@@ -164,7 +164,7 @@ Adds a 0 or 1 or '-1' to the given square in the puzzle.
 void add_number(BinaryPuzzle* puzzle, int row, int col, int number) {
 	if (row < 0 || row > *puzzle->dim || col < 0 || col > *puzzle->dim) {
 		printf("ERROR: The given coordinates fall out of scope of the matrix dimensions.");
-		exit(1);
+		//exit(1);
 	}
 	//printf("row: %d col: %d nr: %d", row, col, number);
 	puzzle->squares[row][col] = number;
@@ -633,7 +633,8 @@ Returns 0 if and only if a number was filled in.
 int check_poss(BinaryPuzzle* puzzle, int length_interval, int remaining, int index, int row_number, int opposite_value) {
 	int changed = 1;
 	for (int k = 0; k < length_interval; k++) {
-		if ((length_interval - k) / 3 > remaining || k / 3 > remaining) {
+		//links = k, rechts = interval - k - 1 voor fictief geplaatste getal
+		if ((length_interval - k - 1) / 3 > remaining - 1 || k / 3 > remaining - 1) {
 			add_number(puzzle, row_number, k + index, opposite_value);
 			changed = 0;
 		}
@@ -696,7 +697,8 @@ int complete_pattern_RC(BinaryPuzzle* puzzle) {
 				}
 			}
 		}
-		printf("pattern_length: %d, startindex: %d, gebruikte0: %d, gebruikte1: %d\n", max_pattern_length_C, max_pattern_start_index_C, number_used_0_C, number_used_1_C);
+		//printf("Cpattern_length: %d, startindex: %d, gebruikte0: %d, gebruikte1: %d\n", max_pattern_length_C, max_pattern_start_index_C, number_used_0_C, number_used_1_C);
+		//printf("pattern_length: %d, startindex: %d, gebruikte0: %d, gebruikte1: %d\n", max_pattern_length, max_pattern_start_index, number_used_0, number_used_1);
 		//Change row if needed
 		if (max_pattern_length > 2 && number_used_0 != number_used_1) {
 			//Try to fill the pattern with the number that was used the most, as there are fewer possibilities left.
@@ -717,8 +719,9 @@ int complete_pattern_RC(BinaryPuzzle* puzzle) {
 			if (max_pattern_start_index > 0
 				&& max_pattern_start_index + max_pattern_length < *puzzle->dim - 1
 				&& puzzle->squares[i][max_pattern_start_index - 1] == opposite_value
-				&& puzzle->squares[i][max_pattern_start_index + max_pattern_length - 1] == opposite_value) {
+				&& puzzle->squares[i][max_pattern_start_index + max_pattern_length] == opposite_value) {
 				if (max_pattern_length == 3) {
+					printf("2 kanten lengte 3\n");
 					if (*puzzle->dim / 2 - used == 1) {
 						add_number(puzzle, i, max_pattern_start_index, opposite_value);
 						add_number(puzzle, i, max_pattern_start_index + 1, value);
@@ -726,8 +729,9 @@ int complete_pattern_RC(BinaryPuzzle* puzzle) {
 					}
 				}
 				else {
-					max_pattern_start_index += 2;
+					printf("2 kanten lengte >3\n");
 					used += 2;
+					max_pattern_start_index += 2;
 					max_pattern_length -= 4;
 					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, i, opposite_value);
 				}
@@ -735,38 +739,50 @@ int complete_pattern_RC(BinaryPuzzle* puzzle) {
 			//Preceded by opposite_value
 			else if (max_pattern_start_index > 0 && puzzle->squares[i][max_pattern_start_index - 1] == opposite_value) {
 				if (max_pattern_length == 3) {
+					printf("preceeded lengte 3\n");
 					if (*puzzle->dim / 2 - used == 1) {
 						add_number(puzzle, i, max_pattern_start_index + 2, opposite_value);
 						changed = 0;
 					}
 				}
 				else {
-					max_pattern_start_index += 2;
+					printf("preceeded lengte >3\n");
 					used += 1;
+					if ((max_pattern_length - 1) / 3 > *puzzle->dim / 2 - used) {
+						add_number(puzzle, i, max_pattern_start_index, opposite_value);
+					}
+					max_pattern_start_index += 2;
 					max_pattern_length -= 2;
 					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, i, opposite_value);
 				}
 			}
 			//Followed by opposite_value
-			else if (max_pattern_start_index < *puzzle->dim - 1 && puzzle->squares[i][max_pattern_start_index - 1] == opposite_value) {
+			else if (max_pattern_start_index < *puzzle->dim - 1 && puzzle->squares[i][max_pattern_start_index + max_pattern_length] == opposite_value) {
 				if (max_pattern_length == 3) {
+					printf("followed lengte 3\n");
 					if (*puzzle->dim / 2 - used == 1) {
 						add_number(puzzle, i, max_pattern_start_index, opposite_value);
 						changed = 0;
 					}
 				}
 				else {
+					printf("followed lengte >3\n");
 					used += 1;
+					if ((max_pattern_length - 1) / 3 > *puzzle->dim / 2 - used) {
+						add_number(puzzle, i, max_pattern_start_index + max_pattern_length - 1, opposite_value);
+					}
 					max_pattern_length -= 2;
 					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, i, opposite_value);
 				}
 			}
 			//Not followed or preceded by opposite_value
 			else {
+				printf("not proceeded followed\n");
+				printf("values: %d, %d, %d \n", max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index);
 				changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, i, opposite_value);
 			}
 		}
-		//Change col if needed
+		//Change col if needed//DIT NOG SERIEUS NA KIJKEN!!!!!!!!!!
 		if (max_pattern_length_C > 2 && number_used_0_C != number_used_1_C) {
 			//Try to fill the pattern with the number that was used the most, as there are fewer possibilities left.
 			int opposite_value = -1;
@@ -786,7 +802,7 @@ int complete_pattern_RC(BinaryPuzzle* puzzle) {
 			if (max_pattern_start_index_C > 0
 				&& max_pattern_start_index_C + max_pattern_length_C < *puzzle->dim - 1
 				&& puzzle->transponse[i][max_pattern_start_index_C - 1] == opposite_value
-				&& puzzle->transponse[i][max_pattern_start_index_C + max_pattern_length_C - 1] == opposite_value) {
+				&& puzzle->transponse[i][max_pattern_start_index_C + max_pattern_length_C] == opposite_value) {
 				if (max_pattern_length_C == 3) {
 					if (*puzzle->dim / 2 - used == 1) {
 						add_number(puzzle, max_pattern_start_index_C, i, opposite_value);
@@ -812,12 +828,15 @@ int complete_pattern_RC(BinaryPuzzle* puzzle) {
 				else {
 					max_pattern_start_index_C += 2;
 					used += 1;
+					if ((max_pattern_length_C - 1) / 3 > *puzzle->dim / 2 - used) {
+						add_number(puzzle, max_pattern_start_index_C, i, opposite_value);
+					}
 					max_pattern_length_C -= 2;
 					changed = check_poss(puzzle, max_pattern_length_C, *puzzle->dim / 2 - used, i, max_pattern_start_index_C, opposite_value);
 				}
 			}
 			//Followed by opposite_value
-			else if (max_pattern_start_index_C < *puzzle->dim - 1 && puzzle->transponse[i][max_pattern_start_index_C - 1] == opposite_value) {
+			else if (max_pattern_start_index_C < *puzzle->dim - 1 && puzzle->transponse[i][max_pattern_start_index_C + max_pattern_length_C] == opposite_value) {
 				if (max_pattern_length_C == 3) {
 					if (*puzzle->dim / 2 - used == 1) {
 						add_number(puzzle, max_pattern_start_index_C, i, opposite_value);
@@ -826,6 +845,9 @@ int complete_pattern_RC(BinaryPuzzle* puzzle) {
 				}
 				else {
 					used += 1;
+					if ((max_pattern_length_C - 1) / 3 > *puzzle->dim / 2 - used) {
+						add_number(puzzle, max_pattern_start_index_C + max_pattern_length_C - 1, i, opposite_value);
+					}
 					max_pattern_length_C -= 2;
 					changed = check_poss(puzzle, max_pattern_length_C, *puzzle->dim / 2 - used, i, max_pattern_start_index_C, opposite_value);
 				}

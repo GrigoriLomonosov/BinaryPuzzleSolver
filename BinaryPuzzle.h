@@ -92,7 +92,7 @@ Also, when the pattern is preceded (or followed) by a 0, then there should be at
 in 2 parts of which floor(k) is greater then the remaining number of 1's -1 (or -2), with k=length(part)/3. If so a 1 cannot
 be filled in. All these squares are then filled with a 0.
 The situation where the pattern is preceded (or followed) by two consecutive zeros, should not be possible as this function
-will always be called after find_pairs.
+will always be called after find_pairs. No special measures were taken, to take this situation into account.
 Analogue for columns and zeros.
 Returns 0 if and only a square was filled.
 */
