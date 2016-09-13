@@ -60,28 +60,28 @@ int is_valid_solution(BinaryPuzzle* puzzle);
 
 /*
 Finds pairs of 0's in the puzzle and fills the edges with 1's (analogue with pairs of 1).
-Returns 0 if at least one pair is found and the edges were filled, 1 if not.
+Returns true if at least one pair is found and the edges were filled, false if not.
 */
-int find_pairs(BinaryPuzzle* puzzle);
+bool find_pairs(BinaryPuzzle* puzzle);
 
 /*
 Searches for 3 squares where the middle square is empty(-1) and the edge squares are both the same.
-Returns 0 if at least one trio is found and the middle square is filled, 1 if not.
+Returns true if at least one trio is found and the middle square is filled, false if not.
 */
-int avoid_trios(BinaryPuzzle* puzzle);
+bool avoid_trios(BinaryPuzzle* puzzle);
 
 /*
 Each row/column should contain the same amount of 1's and 0's. Searches and fills a row/column
 that can be filled based on this rule.
-Returns 0 if at least one square in a row/column was filled, 1 if not.
+Returns true if at least one square in a row/column was filled, false if not.
 */
-int complete_RC(BinaryPuzzle* puzzle);
+bool complete_RC(BinaryPuzzle* puzzle);
 
 /*
 Checks every square if a 1 or 0 can be filled in based on the 3 rules of a binary puzzle. 
-Returns 0 if at least one square in was filled, 1 if not.
+Returns true if at least one square in was filled, false if not.
 */
-int eliminate_impossible_combos(BinaryPuzzle* puzzle);
+bool eliminate_impossible_combos(BinaryPuzzle* puzzle);
 
 /*
 Searches longest pattern of consecutive empty squares in a row and counts the remaining available 1's.
@@ -94,16 +94,16 @@ be filled in. All these squares are then filled with a 0.
 The situation where the pattern is preceded (or followed) by two consecutive zeros, should not be possible as this function
 will always be called after find_pairs. No special measures were taken, to take this situation into account.
 Analogue for columns and zeros.
-Returns 0 if and only a square was filled.
+Returns true if and only a square was filled.
 */
-int complete_pattern_RC(BinaryPuzzle* puzzle);
+bool complete_pattern_RC(BinaryPuzzle* puzzle);
 
 /*
 Calculates all possible combos for a row/column based on what is already filled in, in that row/column.
 Afterwards impossible combos are deleted based on the above rules. When the combos all have one (or more) square(s) in common, that square(s) is (are) filled.
-Returns 0 if at least one square was filled, 1 if not.
+Returns true if at least one square was filled, false if not.
 */
-int eliminate_other_impossible_combos(BinaryPuzzle* puzzle);
+bool eliminate_other_impossible_combos(BinaryPuzzle* puzzle);
 
 /*
 Solves a binary_puzzle

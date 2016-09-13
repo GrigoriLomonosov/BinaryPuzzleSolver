@@ -1,19 +1,19 @@
 #include "BinaryPuzzle.h"
 
 //Checks whether the string only contains 1,0 or -.
-int check_char_in_string(char* input) {
+bool check_char_in_string(char* input) {
 	if (input[0] == '\0') {
-		return 1;
+		return false;
 	}
 	else {
 		unsigned int i = 0;
 		while (i<strlen(input)) {
 			if (input[i] != '0' && input[i] != '1' && input[i] != '-') {
-				return 1;
+				return false;
 			}
 			i++;
 		}
-		return 0;
+		return true;
 	}
 }
 
@@ -51,7 +51,7 @@ BinaryPuzzle* init_puzzle(int dim) {
 }
 
 BinaryPuzzle* init_puzzle_by_pattern(char* input) {
-	if (strlen(input) % 2 != 0 ||check_char_in_string(input) != 0) {
+	if (strlen(input) % 2 != 0 || !check_char_in_string(input)) {
 		//printf("error: inputstring may only contain '0','1' or '-'\n");		
 		return NULL;
 		//exit(1);
@@ -180,7 +180,7 @@ int compare_arrays(int* first, int* second, int size) {
 /*
 Returns 0 if and only if a given array is a complete, valid row for the given puzzle.
 */
-int is_valid_row(BinaryPuzzle* puzzle, int* row, int row_number) {
+bool is_valid_row(BinaryPuzzle* puzzle, int* row, int row_number) {
 	int count_0 = 0;
 	int count_1 = 1;
 	for (int i = 0; i < *puzzle->dim; i++) {
@@ -191,59 +191,59 @@ int is_valid_row(BinaryPuzzle* puzzle, int* row, int row_number) {
 			count_1;
 		}
 		if (row[i] == -1) {
-			return 1;
+			return false;
 		}
 		if (i >= 1 && i < *puzzle->dim - 1) {
 			if (row[i - 1] == row[i] && row[i] == row[i + 1]) {
-				return 1;
+				return false;
 			}
 		}
 	}
 	if (count_0 != *puzzle->dim / 2 || count_1 != *puzzle->dim / 2) {
-		return 1;
+		return false;
 	}
 	//Check for duplicate rows
 	for (int k = 0; k < *puzzle->dim; k++) {
 		if (compare_arrays(row, puzzle->squares[k], *puzzle->dim) == 0 && row_number != k) {
-			return 1;
+			return false;
 		}
 	}
-	return 0;
+	return true;
 }
+//
+///*
+//Returns 0 if and only if a given array is still a possibility for a valid row in the given puzzle.
+//*/
+//int is_still_possible_row(BinaryPuzzle* puzzle, int* row, int row_number) {
+//	int count_0 = 0;
+//	int count_1 = 1;
+//	for (int i = 0; i < *puzzle->dim; i++) {
+//		if (row[i] == 0) {
+//			count_0++;
+//		}
+//		if (row[i] == 1) {
+//			count_1;
+//		}
+//		if (i >= 1 && i < *puzzle->dim - 1) {
+//			if (row[i - 1] == row[i] && row[i] == row[i + 1] && row[i] != -1) {
+//				return 1;
+//			}
+//		}
+//	}
+//	if (count_0 > *puzzle->dim / 2 || count_1 > *puzzle->dim / 2) {
+//		return 1;
+//	}
+//	//Check for duplicate rows
+//	for (int k = 0; k < *puzzle->dim; k++) {
+//		if (compare_arrays(row, puzzle->squares[k], *puzzle->dim) == 0 && row_number != k && is_valid_row(puzzle,puzzle->squares[k],k) == 0) {
+//			return 1;
+//		}
+//	}
+//	return 0;
+//}
 
-/*
-Returns 0 if and only if a given array is still a possibility for a valid row in the given puzzle.
-*/
-int is_still_possible_row(BinaryPuzzle* puzzle, int* row, int row_number) {
-	int count_0 = 0;
-	int count_1 = 1;
-	for (int i = 0; i < *puzzle->dim; i++) {
-		if (row[i] == 0) {
-			count_0++;
-		}
-		if (row[i] == 1) {
-			count_1;
-		}
-		if (i >= 1 && i < *puzzle->dim - 1) {
-			if (row[i - 1] == row[i] && row[i] == row[i + 1] && row[i] != -1) {
-				return 1;
-			}
-		}
-	}
-	if (count_0 > *puzzle->dim / 2 || count_1 > *puzzle->dim / 2) {
-		return 1;
-	}
-	//Check for duplicate rows
-	for (int k = 0; k < *puzzle->dim; k++) {
-		if (compare_arrays(row, puzzle->squares[k], *puzzle->dim) == 0 && row_number != k && is_valid_row(puzzle,puzzle->squares[k],k) == 0) {
-			return 1;
-		}
-	}
-	return 0;
-}
-
-int find_pairs(BinaryPuzzle* puzzle) {
-	int changed = 1;
+bool find_pairs(BinaryPuzzle* puzzle) {
+	bool changed = false;
 	for (int i = 0; i < *puzzle->dim; i++) {
 		for (int j = 1; j < *puzzle->dim; j++) {
 			//Check row
@@ -252,11 +252,11 @@ int find_pairs(BinaryPuzzle* puzzle) {
 				//0 becomes 1, 1 becomes 0
 				if (j - 2 >= 0 && puzzle->squares[i][j - 2] == -1) {
 					add_number(puzzle, i, j - 2, (puzzle->squares[i][j] + 1) % 2);
-					changed = 0;
+					changed = true;
 				}
 				if (j + 1 < *puzzle->dim && puzzle->squares[i][j + 1] == -1) {
 					add_number(puzzle, i, j + 1, (puzzle->squares[i][j] + 1) % 2);
-					changed = 0;
+					changed = true;
 				}
 			}
 			//Check col
@@ -265,11 +265,11 @@ int find_pairs(BinaryPuzzle* puzzle) {
 				//0 becomes 1, 1 becomes 0
 				if (j - 2 >= 0 && puzzle->transponse[i][j - 2] == -1) {
 					add_number(puzzle, j - 2, i, (puzzle->transponse[i][j] + 1) % 2);
-					changed = 0;
+					changed = true;
 				}
 				if (j + 1 < *puzzle->dim && puzzle->transponse[i][j + 1] == -1) {
 					add_number(puzzle, j + 1, i, (puzzle->transponse[i][j] + 1) % 2);
-					changed = 0;
+					changed = true;
 				}
 			}
 		}
@@ -277,8 +277,8 @@ int find_pairs(BinaryPuzzle* puzzle) {
 	return changed;
 }
 
-int avoid_trios(BinaryPuzzle* puzzle) {
-	int changed = 1;
+bool avoid_trios(BinaryPuzzle* puzzle) {
+	bool changed = false;
 	for (int i = 0; i < *puzzle->dim; i++) {
 		for (int j = 1; j < *puzzle->dim - 1; j++) {
 			//Check row
@@ -287,7 +287,7 @@ int avoid_trios(BinaryPuzzle* puzzle) {
 				(puzzle->squares[i][j-1] == 0 || puzzle->squares[i][j-1] == 1)) {
 				//0 becomes 1, 1 becomes 0
 				add_number(puzzle, i, j, (puzzle->squares[i][j-1] + 1) % 2);
-				changed = 0;
+				changed = true;
 			}
 			//Check col
 			if (puzzle->transponse[i][j] == -1 &&
@@ -295,127 +295,104 @@ int avoid_trios(BinaryPuzzle* puzzle) {
 				(puzzle->transponse[i][j - 1] == 0 || puzzle->transponse[i][j - 1] == 1)) {
 				//0 becomes 1, 1 becomes 0
 				add_number(puzzle, j, i, (puzzle->transponse[i][j - 1] + 1) % 2);
-				changed = 0;
+				changed = true;
 			}
 		}
 	}
 	return changed;
 }
 
-//KAN DIT NIET LEESBAARDER ZODAT JE NIET TWEE KEER HETZELFDE HEBT???
-int complete_RC(BinaryPuzzle* puzzle) {
-	int changed = 1;	
-	for (int i = 0; i < *puzzle->dim; i++) {
-		//Check row
-		int coordinates[2] = { -1, -1 };
-		int count_empty = 0;
-		int count_0 = 0;
-		int count_1 = 0;
-		for (int j = 0; j < *puzzle->dim; j++) {
-			if (puzzle->squares[i][j] == 0) {
-				count_0++;
-			}
-			if (puzzle->squares[i][j] == 1) {
-				count_1++;
-			}
-			if (puzzle->squares[i][j] == -1) {
-				if (count_empty == 2) {
-					break;
-				}
-				else {
-					coordinates[count_empty] = j;
-					count_empty++;
-				}
-			}
+bool complete_array(BinaryPuzzle* puzzle, int* arr, int row_number, bool row) {
+	bool changed = false;
+	//Check array
+	int coordinates[2] = { -1, -1 };
+	int count_empty = 0;
+	int count_0 = 0;
+	int count_1 = 0;
+	for (int j = 0; j < *puzzle->dim; j++) {
+		if (arr[j] == 0) {
+			count_0++;
 		}
-		//Change row
-		if (count_0 == *puzzle->dim / 2 && count_empty) {
+		if (arr[j] == 1) {
+			count_1++;
+		}
+		if (arr[j] == -1) {
 			if (count_empty == 2) {
-				add_number(puzzle, i, coordinates[0], 1);
-				add_number(puzzle, i, coordinates[1], 1);
+				break;
 			}
-			else if (count_empty == 1) {
-				add_number(puzzle, i, coordinates[0], 1);
+			else {
+				coordinates[count_empty] = j;
+				count_empty++;
 			}
-			changed = 0;
-		}
-		else if (count_1 == *puzzle->dim / 2 && count_empty) {
-			if (count_empty == 2) {
-				add_number(puzzle, i, coordinates[0], 0);
-				add_number(puzzle, i, coordinates[1], 0);
-			}
-			else if (count_empty == 1) {
-				add_number(puzzle, i, coordinates[0], 0);
-			}
-			changed = 0;
-		}
-		//Check col
-		int coordinates_C[2] = { -1, -1 };
-		int count_empty_C = 0;
-		int count_0_C = 0;
-		int count_1_C = 0;
-		for (int j = 0; j < *puzzle->dim; j++) {
-			if (puzzle->transponse[i][j] == 0) {
-				count_0_C++;
-			}
-			if (puzzle->transponse[i][j] == 1) {
-				count_1_C++;
-			}
-			if (puzzle->transponse[i][j] == -1) {
-				if (count_empty_C == 2) {
-					break;
-				}
-				else {
-					coordinates_C[count_empty_C] = j;
-					count_empty_C++;
-				}
-			}
-		}
-		//Change col
-		if (count_0_C == *puzzle->dim / 2 && count_empty_C) {
-			if (count_empty_C == 2) {
-				add_number(puzzle, coordinates_C[0], i, 1);
-				add_number(puzzle, coordinates_C[1], i, 1);
-			}
-			else if (count_empty_C == 1) {
-				add_number(puzzle, coordinates_C[0], i, 1);
-			}
-			changed = 0;
-		}
-		else if (count_1_C == *puzzle->dim / 2 && count_empty_C) {
-			if (count_empty_C == 2) {
-				add_number(puzzle, coordinates_C[0], i, 0);
-				add_number(puzzle, coordinates_C[1], i, 0);
-			}
-			else if (count_empty_C == 1) {
-				add_number(puzzle, coordinates_C[0], i, 0);
-			}
-			changed = 0;
 		}
 	}
+	//Switch coordinates when we are working with a column
+	int row_1 = row_number;
+	int row_2 = row_number;
+	int col_1 = coordinates[0];
+	int col_2 = coordinates[1];
+	if (!row) {
+		col_1 = row_number;
+		col_2 = row_number;
+		row_1 = coordinates[0];
+		row_2 = coordinates[1];
+	}
+	//Change arr
+	if (count_0 == *puzzle->dim / 2 && count_empty != 0) {
+		if (count_empty == 2) {
+			add_number(puzzle, row_1, col_1, 1);
+			add_number(puzzle, row_2, col_2, 1);
+		}
+		else if (count_empty == 1) {
+			add_number(puzzle, row_1, col_1, 1);
+		}
+		changed = true;
+	}
+	else if (count_1 == *puzzle->dim / 2 && count_empty != 0) {
+		if (count_empty == 2) {
+			add_number(puzzle, row_1, col_1, 0);
+			add_number(puzzle, row_2, col_2, 0);
+		}
+		else if (count_empty == 1) {
+			add_number(puzzle, row_1, col_1, 0);
+		}
+		changed = true;
+	}
 	return changed;
+}
+
+bool complete_RC(BinaryPuzzle* puzzle) {
+	bool result = false;	
+	for (int i = 0; i < *puzzle->dim; i++) {
+		bool changed_row = complete_array(puzzle, puzzle->squares[i], i, true);
+		bool changed_col = complete_array(puzzle, puzzle->transponse[i], i, false);
+		if (!result) {
+			result = changed_row || changed_col;
+
+		}
+	}
+	return result;
 }
 
 /*
-Returns 0 if and only if a 1 can be filled in in the given square
-based on the three rules of binary puzzles.
+Returns true if the given value can be filled in at the given coordinates.
 */
-//NIETS VERVANGEN DOOR is_still_possible row. DIT GAAT VERTRAGEN!!
-int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
+bool is_number_possible(BinaryPuzzle* puzzle, int row, int col, int value) {
+	int opposite_value = (value + 1) % 2;
 	if (puzzle->squares[row][col] == -1) {
-		add_number(puzzle, row, col, 1);
-		//Check for 3 consecutive ones
+		add_number(puzzle, row, col, value);
+		//Check for 3 consecutive values
 		int row_first = col - 1;
 		int row_third = col + 1;
 		int col_first = row - 1;
 		int col_third = row + 1;
-		if (row_first >= 0 && row_third < *puzzle->dim && puzzle->squares[row][row_first] == 1 && puzzle->squares[row][row_third] == 1) {
+		if (row_first >= 0 && row_third < *puzzle->dim && puzzle->squares[row][row_first] == value && puzzle->squares[row][row_third] == value) {
 			add_number(puzzle, row, col, -1);
-			return 1;
+			return false;
 		}
-		if (col_first >= 0 && col_third < *puzzle->dim && puzzle->transponse[col][col_first] == 1 && puzzle->transponse[col][col_third] == 1) {
+		if (col_first >= 0 && col_third < *puzzle->dim && puzzle->transponse[col][col_first] == value && puzzle->transponse[col][col_third] == value) {
 			add_number(puzzle, row, col, -1);
-			return 1;
+			return false;
 		}
 
 		int count_empty = 0;
@@ -429,37 +406,37 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 				count_empty++;
 				empty_coordinate = i;
 			}
-			if (puzzle->squares[row][i] == 1) {
+			if (puzzle->squares[row][i] == value) {
 				count_1++;
 			}
 			if (puzzle->transponse[col][i] == -1) {
 				count_empty_C++;
 				empty_coordinate_C = i;
 			}
-			if (puzzle->transponse[col][i] == 1) {
+			if (puzzle->transponse[col][i] == value) {
 				count_1_C++;
 			}
 		}
-		//Check number of ones
+		//Check number of values
 		if (count_1 > *puzzle->dim / 2 || count_1_C > *puzzle->dim / 2) {
 			add_number(puzzle, row, col, -1);
-			return 1;
+			return false;
 		}
-		//Fill the rows/cols if we assume a 1 was entered in the given square
+		//Fill the rows/cols if we assume a value was entered in the given square
 		if (count_empty == 1) {
 			if (count_1 == *puzzle->dim / 2) {
-				add_number(puzzle, row, empty_coordinate, 0);
+				add_number(puzzle, row, empty_coordinate, opposite_value);
 			}
 			else {
-				add_number(puzzle, row, empty_coordinate, 1);
+				add_number(puzzle, row, empty_coordinate, value);
 			}
 		}
 		if (count_empty_C == 1) {
 			if (count_1_C == *puzzle->dim / 2) {
-				add_number(puzzle, empty_coordinate_C, col, 0);
+				add_number(puzzle, empty_coordinate_C, col, opposite_value);
 			}
 			else {
-				add_number(puzzle, empty_coordinate_C, col, 1);
+				add_number(puzzle, empty_coordinate_C, col, value);
 			}
 		}
 		//Check for identical rows if the count of empty squares is one or zero
@@ -470,7 +447,7 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 					if (count_empty == 1) {
 						add_number(puzzle, row, empty_coordinate, -1);
 					}
-					return 1;
+					return false;
 				}
 			}
 		}
@@ -482,116 +459,11 @@ int is_one_possible(BinaryPuzzle* puzzle, int row, int col){
 					if (count_empty_C == 1) {
 						add_number(puzzle, empty_coordinate_C, col, -1);
 					}
-					return 1;
+					return false;
 				}
 			}
 		}
-		//Reset the values if 1 is possible
-		add_number(puzzle, row, col, -1);
-		if (count_empty == 1) {
-			add_number(puzzle, row, empty_coordinate, -1);
-			}
-		if (count_empty_C == 1) {
-			add_number(puzzle, empty_coordinate_C, col, -1);
-		}
-	return 0;
-}
-	else {
-		return 1;
-	}
-}
-
-/*
-Returns 0 if and only if a 0 can be filled in in the given square
-based on the three rules of binary puzzles.
-*/
-//NIETS VERVANGEN DOOR is_still_possible row. DIT GAAT VERTRAGEN!!
-int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
-	if (puzzle->squares[row][col] == -1) {
-		add_number(puzzle, row, col, 0);
-		//Check for 3 consecutive zeros
-		int row_first = col - 1;
-		int row_third = col + 1;
-		int col_first = row - 1;
-		int col_third = row + 1;
-		if (row_first >= 0 && row_third < *puzzle->dim && puzzle->squares[row][row_first] == 0 && puzzle->squares[row][row_third] == 0) {
-			add_number(puzzle, row, col, -1);
-			return 1;
-		}
-		if (col_first >= 0 && col_third < *puzzle->dim && puzzle->transponse[col][col_first] == 0 && puzzle->transponse[col][col_third] == 0) {
-			add_number(puzzle, row, col, -1);
-			return 1;
-		}
-
-		int count_empty = 0;
-		int count_0 = 0;
-		int empty_coordinate = -1;
-		int count_empty_C = 0;
-		int count_0_C = 0;
-		int empty_coordinate_C = -1;
-		for (int i = 0; i < *puzzle->dim; i++) {
-			if (puzzle->squares[row][i] == -1) {
-				count_empty++;
-				empty_coordinate = i;
-			}
-			if (puzzle->squares[row][i] == 0) {
-				count_0++;
-			}
-			if (puzzle->transponse[col][i] == -1) {
-				count_empty_C++;
-				empty_coordinate_C = i;
-			}
-			if (puzzle->transponse[col][i] == 0) {
-				count_0_C++;
-			}
-		}
-		//Check number of zeros
-		if (count_0 > *puzzle->dim / 2 || count_0_C > *puzzle->dim / 2) {
-			add_number(puzzle, row, col, -1);
-			return 1;
-		}
-		//Fill the rows/cols if we assume a 0 was entered in the given square
-		if (count_empty == 1) {
-			if (count_0 == *puzzle->dim / 2) {
-				add_number(puzzle, row, empty_coordinate, 1);
-			}
-			else {
-				add_number(puzzle, row, empty_coordinate, 0);
-			}
-		}
-		if (count_empty_C == 1) {
-			if (count_0_C == *puzzle->dim / 2) {
-				add_number(puzzle, empty_coordinate_C, col, 1);
-			}
-			else {
-				add_number(puzzle, empty_coordinate_C, col, 0);
-			}
-		}
-		//Check for identical rows if the count of empty squares is one or zero
-		if (count_empty == 0 || count_empty == 1) {
-			for (int k = 0; k < *puzzle->dim; k++) {
-				if (compare_arrays(puzzle->squares[row], puzzle->squares[k], *puzzle->dim) == 0 && k != row) {
-					add_number(puzzle, row, col, -1);
-					if (count_empty == 1) {
-						add_number(puzzle, row, empty_coordinate, -1);
-					}
-					return 1;
-				}
-			}
-		}
-		//Check for identical cols if the count of empty squares is one or zero.
-		if (count_empty_C == 0 || count_empty_C == 1) {
-			for (int k = 0; k < *puzzle->dim; k++) {
-				if (compare_arrays(puzzle->transponse[col], puzzle->transponse[k], *puzzle->dim) == 0 && k != col) {
-					add_number(puzzle, row, col, -1);
-					if (count_empty_C == 1) {
-						add_number(puzzle, empty_coordinate_C, col, -1);
-					}
-					return 1;
-				}
-			}
-		}
-		//Reset the values if 0 is possible
+		//Reset the values if value is possible
 		add_number(puzzle, row, col, -1);
 		if (count_empty == 1) {
 			add_number(puzzle, row, empty_coordinate, -1);
@@ -599,24 +471,25 @@ int is_zero_possible(BinaryPuzzle*puzzle, int row, int col) {
 		if (count_empty_C == 1) {
 			add_number(puzzle, empty_coordinate_C, col, -1);
 		}
-		return 0;
+		return true;
 	}
 	else {
-		return 1;
+		return false;
 	}
 }
 
-int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
-	int changed = 1;
+bool eliminate_impossible_combos(BinaryPuzzle* puzzle) {
+	bool changed = false;
 	for (int i = 0; i < *puzzle->dim; i++) {
 		for (int j = 0; j < *puzzle->dim; j++) {
-			if (is_one_possible(puzzle, i, j) != 0 && puzzle->squares[i][j] == -1) {
+			//printf("%b", is_number_possible(puzzle, i, j, 1));
+			if (!is_number_possible(puzzle, i, j, 1) && puzzle->squares[i][j] == -1) {
 				add_number(puzzle, i, j, 0);
-				changed = 0;
+				changed = true;
 			}
-			if (is_zero_possible(puzzle, i, j) != 0 && puzzle->squares[i][j] == -1) {
+			if (!is_number_possible(puzzle, i, j, 0) && puzzle->squares[i][j] == -1) {
 				add_number(puzzle, i, j, 1);
-				changed = 0;
+				changed = true;
 			}
 		}
 	}
@@ -627,241 +500,192 @@ int eliminate_impossible_combos(BinaryPuzzle* puzzle) {
 number of remaining numbers. If this is not possible, the opposite value is entered.
 Returns 0 if and only if a number was filled in.
 */
-int check_poss(BinaryPuzzle* puzzle, int length_interval, int remaining, int index, int row_number, int opposite_value) {
-	int changed = 1;
+bool check_poss(BinaryPuzzle* puzzle, int length_interval, int remaining, int index, int row_number, int opposite_value) {
+	bool changed = false;
 	for (int k = 0; k < length_interval; k++) {
 		//links = k, rechts = interval - k - 1 voor fictief geplaatste getal
 		if ((length_interval - k - 1) / 3 > remaining - 1 || k / 3 > remaining - 1) {
 			add_number(puzzle, row_number, k + index, opposite_value);
-			changed = 0;
+			changed = true;
 		}
 	}
 	return changed;
 }
 
-int complete_pattern_RC(BinaryPuzzle* puzzle) {
-	int changed = 1;
+bool complete_pattern(BinaryPuzzle* puzzle, int* arr, int row_number, bool row) {
+	bool changed = false;
+	int start_index = 0;
+	int pattern_length = 0;
+	int max_pattern_length = 0;
+	int max_pattern_start_index = 0;
+	int number_used_0 = 0;
+	int number_used_1 = 0;
+	for (int j = 0; j < *puzzle->dim; j++) {
+		if (arr[j] == 0) {
+			number_used_0++;
+			pattern_length = 0;
+			start_index = j + 1;
+		}
+		if (arr[j] == 1) {
+			number_used_1++;
+			pattern_length = 0;
+			start_index = j + 1;
+		}
+		if (arr[j] == -1) {
+			pattern_length++;
+			if (pattern_length > max_pattern_length) {
+				max_pattern_length = pattern_length;
+				max_pattern_start_index = start_index;
+			}
+		}
+	}
+	//Change arr if needed
+	if (max_pattern_length > 2 && number_used_0 != number_used_1) {
+		//Try to fill the pattern with the number that was used the most, as there are fewer possibilities left.
+		int opposite_value = 1;
+		int value = 0;
+		int used = number_used_0;
+		if (number_used_1 > number_used_0) {
+			opposite_value = 0;
+			value = 1;
+			used = number_used_1;
+		}
+		//Followed and preceded by opposite_value
+		if (max_pattern_start_index > 0
+			&& max_pattern_start_index + max_pattern_length < *puzzle->dim - 1
+			&& arr[max_pattern_start_index - 1] == opposite_value
+			&& arr[max_pattern_start_index + max_pattern_length] == opposite_value) {
+			if (max_pattern_length == 3) {
+				printf("2 kanten lengte 3\n");
+				if (*puzzle->dim / 2 - used == 1) {
+					if (row) {
+						add_number(puzzle, row_number, max_pattern_start_index, opposite_value);
+						add_number(puzzle, row_number, max_pattern_start_index + 1, value);
+						add_number(puzzle, row_number, max_pattern_start_index + 2, opposite_value);
+					}
+					else {
+						add_number(puzzle, max_pattern_start_index, row_number, opposite_value);
+						add_number(puzzle, max_pattern_start_index + 1, row_number, value);
+						add_number(puzzle, max_pattern_start_index + 2, row_number, opposite_value);
+					}
+					changed = true;
+				}
+			}
+			else {
+				printf("2 kanten lengte >3\n");
+				used += 2;
+				max_pattern_start_index += 2;
+				max_pattern_length -= 4;
+				if (row) {
+					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, row_number, opposite_value) || changed;
+				}
+				else {
+					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, row_number, max_pattern_start_index, opposite_value) || changed;
+				}
+			}
+		}
+		//Preceded by opposite_value
+		else if (max_pattern_start_index > 0 && arr[max_pattern_start_index - 1] == opposite_value) {
+			if (max_pattern_length == 3) {
+				printf("preceeded lengte 3\n");
+				if (*puzzle->dim / 2 - used == 1) {
+					if (row) {
+						add_number(puzzle, row_number, max_pattern_start_index + 2, opposite_value);
+					}
+					else {
+						add_number(puzzle, max_pattern_start_index + 2, row_number, opposite_value);
+					}
+					changed = true;
+				}
+			}
+			else {
+				printf("preceeded lengte >3\n");
+				used += 1;
+				if ((max_pattern_length - 1) / 3 > *puzzle->dim / 2 - used) {
+					if (row) {
+						add_number(puzzle, row_number, max_pattern_start_index, opposite_value);
+					}
+					else {
+						add_number(puzzle, max_pattern_start_index, row_number, opposite_value);
+					}
+					changed = true;
+				}
+				max_pattern_start_index += 2;
+				max_pattern_length -= 2;
+				if (row) {
+					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, row_number, opposite_value) || changed;
+				}
+				else {
+					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, row_number, max_pattern_start_index, opposite_value) || changed;
+				}
+			}
+		}
+		//Followed by opposite_value
+		else if (max_pattern_start_index < *puzzle->dim - 1 && arr[max_pattern_start_index + max_pattern_length] == opposite_value) {
+			if (max_pattern_length == 3) {
+				printf("followed lengte 3\n");
+				if (*puzzle->dim / 2 - used == 1) {
+					if (row) {
+						add_number(puzzle, row_number, max_pattern_start_index, opposite_value);
+					}
+					else {
+						add_number(puzzle, max_pattern_start_index, row_number, opposite_value);
+					}
+					changed = true;
+				}
+			}
+			else {
+				printf("followed lengte >3\n");
+				used += 1;
+				if ((max_pattern_length - 1) / 3 > *puzzle->dim / 2 - used) {
+					if (row) {
+						add_number(puzzle, row_number, max_pattern_start_index + max_pattern_length - 1, opposite_value);
+					}
+					else {
+						add_number(puzzle, max_pattern_start_index + max_pattern_length - 1, row_number, opposite_value);
+					}
+					changed = true;
+				}
+				max_pattern_length -= 2;
+				if (row) {
+					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, row_number, opposite_value) || changed;
+				}
+				else {
+					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, row_number, max_pattern_start_index, opposite_value) || changed;
+				}
+			}
+		}
+		//Not followed or preceded by opposite_value
+		else {
+			printf("not proceeded followed\n");
+			printf("values: %d, %d, %d \n", max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index);
+			if (row) {
+				changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, row_number, opposite_value) || changed;
+			}
+			else {
+				changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, row_number, max_pattern_start_index, opposite_value) || changed;
+			}
+		}
+	}
+	return changed;
+}
+
+bool complete_pattern_RC(BinaryPuzzle* puzzle) {
+	bool changed = false;
 	for (int i = 0; i < *puzzle->dim; i++) {
-		//Variables for row
-		int start_index = 0;
-		int pattern_length = 0;
-		int max_pattern_length = 0;
-		int max_pattern_start_index = 0;
-		int number_used_0 = 0;
-		int number_used_1 = 0;
-		//Variables for col
-		int start_index_C = 0;
-		int pattern_length_C = 0;
-		int max_pattern_length_C = 0;
-		int max_pattern_start_index_C = 0;
-		int number_used_0_C = 0;
-		int number_used_1_C = 0;
-		for (int j = 0; j < *puzzle->dim; j++) {
-			//Count row
-			if (puzzle->squares[i][j] == 0) {
-				number_used_0++;
-				pattern_length = 0;
-				start_index = j + 1;
-			}
-			if (puzzle->squares[i][j] == 1) {
-				number_used_1++;
-				pattern_length = 0;
-				start_index = j + 1;
-			}
-			if (puzzle->squares[i][j] == -1) {
-				pattern_length++;
-				if (pattern_length > max_pattern_length) {
-					max_pattern_length = pattern_length;
-					max_pattern_start_index = start_index;
-				}
-			}
-			//Count col
-			if (puzzle->transponse[i][j] == 0) {
-				number_used_0_C++;
-				pattern_length_C = 0;
-				start_index_C = j + 1;
-			}
-			if (puzzle->transponse[i][j] == 1) {
-				number_used_1_C++;
-				pattern_length_C = 0;
-				start_index_C = j + 1;
-			}
-			if (puzzle->transponse[i][j] == -1) {
-				pattern_length_C++;
-				if (pattern_length_C > max_pattern_length_C) {
-					max_pattern_length_C = pattern_length_C;
-					max_pattern_start_index_C = start_index_C;
-				}
-			}
+		bool changed_row = complete_pattern(puzzle, puzzle->squares[i], i, true);
+		bool changed_col = complete_pattern(puzzle, puzzle->transponse[i], i, false);
+		if (!changed) {
+			changed = changed_row || changed_col;
 		}
-		//printf("Cpattern_length: %d, startindex: %d, gebruikte0: %d, gebruikte1: %d\n", max_pattern_length_C, max_pattern_start_index_C, number_used_0_C, number_used_1_C);
-		//printf("pattern_length: %d, startindex: %d, gebruikte0: %d, gebruikte1: %d\n", max_pattern_length, max_pattern_start_index, number_used_0, number_used_1);
-		//Change row if needed
-		if (max_pattern_length > 2 && number_used_0 != number_used_1) {
-			//Try to fill the pattern with the number that was used the most, as there are fewer possibilities left.
-			int opposite_value = -1;
-			int value = -1;
-			int used = -1;
-			if (number_used_1 > number_used_0) {
-				opposite_value = 0;
-				value = 1;
-				used = number_used_1;
-			}
-			else if (number_used_0 > number_used_1) {
-				opposite_value = 1;
-				value = 0;
-				used = number_used_0;
-			}
-			//Followed and preceded by opposite_value
-			if (max_pattern_start_index > 0
-				&& max_pattern_start_index + max_pattern_length < *puzzle->dim - 1
-				&& puzzle->squares[i][max_pattern_start_index - 1] == opposite_value
-				&& puzzle->squares[i][max_pattern_start_index + max_pattern_length] == opposite_value) {
-				if (max_pattern_length == 3) {
-					printf("2 kanten lengte 3\n");
-					if (*puzzle->dim / 2 - used == 1) {
-						add_number(puzzle, i, max_pattern_start_index, opposite_value);
-						add_number(puzzle, i, max_pattern_start_index + 1, value);
-						add_number(puzzle, i, max_pattern_start_index + 2, opposite_value);
-					}
-				}
-				else {
-					printf("2 kanten lengte >3\n");
-					used += 2;
-					max_pattern_start_index += 2;
-					max_pattern_length -= 4;
-					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, i, opposite_value);
-				}
-			}
-			//Preceded by opposite_value
-			else if (max_pattern_start_index > 0 && puzzle->squares[i][max_pattern_start_index - 1] == opposite_value) {
-				if (max_pattern_length == 3) {
-					printf("preceeded lengte 3\n");
-					if (*puzzle->dim / 2 - used == 1) {
-						add_number(puzzle, i, max_pattern_start_index + 2, opposite_value);
-						changed = 0;
-					}
-				}
-				else {
-					printf("preceeded lengte >3\n");
-					used += 1;
-					if ((max_pattern_length - 1) / 3 > *puzzle->dim / 2 - used) {
-						add_number(puzzle, i, max_pattern_start_index, opposite_value);
-					}
-					max_pattern_start_index += 2;
-					max_pattern_length -= 2;
-					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, i, opposite_value);
-				}
-			}
-			//Followed by opposite_value
-			else if (max_pattern_start_index < *puzzle->dim - 1 && puzzle->squares[i][max_pattern_start_index + max_pattern_length] == opposite_value) {
-				if (max_pattern_length == 3) {
-					printf("followed lengte 3\n");
-					if (*puzzle->dim / 2 - used == 1) {
-						add_number(puzzle, i, max_pattern_start_index, opposite_value);
-						changed = 0;
-					}
-				}
-				else {
-					printf("followed lengte >3\n");
-					used += 1;
-					if ((max_pattern_length - 1) / 3 > *puzzle->dim / 2 - used) {
-						add_number(puzzle, i, max_pattern_start_index + max_pattern_length - 1, opposite_value);
-					}
-					max_pattern_length -= 2;
-					changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, i, opposite_value);
-				}
-			}
-			//Not followed or preceded by opposite_value
-			else {
-				printf("not proceeded followed\n");
-				printf("values: %d, %d, %d \n", max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index);
-				changed = check_poss(puzzle, max_pattern_length, *puzzle->dim / 2 - used, max_pattern_start_index, i, opposite_value);
-			}
-		}
-		//Change col if needed//DIT NOG SERIEUS NA KIJKEN!!!!!!!!!!
-		if (max_pattern_length_C > 2 && number_used_0_C != number_used_1_C) {
-			//Try to fill the pattern with the number that was used the most, as there are fewer possibilities left.
-			int opposite_value = -1;
-			int value = -1;
-			int used = -1;
-			if (number_used_1_C > number_used_0_C) {
-				opposite_value = 0;
-				value = 1;
-				used = number_used_1_C;
-			}
-			else if (number_used_0_C > number_used_1_C) {
-				opposite_value = 1;
-				value = 0;
-				used = number_used_0_C;
-			}
-			//Followed and preceded by opposite_value
-			if (max_pattern_start_index_C > 0
-				&& max_pattern_start_index_C + max_pattern_length_C < *puzzle->dim - 1
-				&& puzzle->transponse[i][max_pattern_start_index_C - 1] == opposite_value
-				&& puzzle->transponse[i][max_pattern_start_index_C + max_pattern_length_C] == opposite_value) {
-				if (max_pattern_length_C == 3) {
-					if (*puzzle->dim / 2 - used == 1) {
-						add_number(puzzle, max_pattern_start_index_C, i, opposite_value);
-						add_number(puzzle, max_pattern_start_index_C + 1, i, value);
-						add_number(puzzle, max_pattern_start_index_C + 2, i, opposite_value);
-					}
-				}
-				else {
-					max_pattern_start_index_C += 2;
-					used += 2;
-					max_pattern_length_C -= 4;
-					changed = check_poss(puzzle, max_pattern_length_C, *puzzle->dim / 2 - used, i, max_pattern_start_index_C, opposite_value);
-				}
-			}
-			//Preceded by opposite_value
-			else if (max_pattern_start_index_C > 0 && puzzle->transponse[i][max_pattern_start_index_C - 1] == opposite_value) {
-				if (max_pattern_length_C == 3) {
-					if (*puzzle->dim / 2 - used == 1) {
-						add_number(puzzle, max_pattern_start_index_C + 2, i, opposite_value);
-						changed = 0;
-					}
-				}
-				else {
-					max_pattern_start_index_C += 2;
-					used += 1;
-					if ((max_pattern_length_C - 1) / 3 > *puzzle->dim / 2 - used) {
-						add_number(puzzle, max_pattern_start_index_C, i, opposite_value);
-					}
-					max_pattern_length_C -= 2;
-					changed = check_poss(puzzle, max_pattern_length_C, *puzzle->dim / 2 - used, i, max_pattern_start_index_C, opposite_value);
-				}
-			}
-			//Followed by opposite_value
-			else if (max_pattern_start_index_C < *puzzle->dim - 1 && puzzle->transponse[i][max_pattern_start_index_C + max_pattern_length_C] == opposite_value) {
-				if (max_pattern_length_C == 3) {
-					if (*puzzle->dim / 2 - used == 1) {
-						add_number(puzzle, max_pattern_start_index_C, i, opposite_value);
-						changed = 0;
-					}
-				}
-				else {
-					used += 1;
-					if ((max_pattern_length_C - 1) / 3 > *puzzle->dim / 2 - used) {
-						add_number(puzzle, max_pattern_start_index_C + max_pattern_length_C - 1, i, opposite_value);
-					}
-					max_pattern_length_C -= 2;
-					changed = check_poss(puzzle, max_pattern_length_C, *puzzle->dim / 2 - used, i, max_pattern_start_index_C, opposite_value);
-				}
-			}
-			//Not followed or preceded by opposite_value
-			else {
-				changed = check_poss(puzzle, max_pattern_length_C, *puzzle->dim / 2 - used, i, max_pattern_start_index_C, opposite_value);
-			}
-		}
-		
 	}
 	return changed;
 }
 
-int eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
+bool eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
+	bool changed = false;
 
-	return 0;
+	return changed;
 }
 
 void solve_puzzle(BinaryPuzzle** original) {
