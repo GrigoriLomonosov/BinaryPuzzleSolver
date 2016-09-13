@@ -88,10 +88,8 @@ BinaryPuzzle* init_puzzle_by_pattern(char* input) {
 
 void free_puzzle(BinaryPuzzle* puzzle) {
 	for (int i = 0; i < *puzzle->dim; i++) {
-		if (puzzle->squares[i])
-			free(puzzle->squares[i]);
-		if(puzzle->transponse[i])
-			free(puzzle->transponse[i]);
+		free(puzzle->squares[i]);
+		free(puzzle->transponse[i]);
 	}
 	free(puzzle->squares);
 	free(puzzle->transponse);
@@ -164,9 +162,8 @@ Adds a 0 or 1 or '-1' to the given square in the puzzle.
 void add_number(BinaryPuzzle* puzzle, int row, int col, int number) {
 	if (row < 0 || row > *puzzle->dim || col < 0 || col > *puzzle->dim) {
 		printf("ERROR: The given coordinates fall out of scope of the matrix dimensions.");
-		//exit(1);
+		exit(1);
 	}
-	//printf("row: %d col: %d nr: %d", row, col, number);
 	puzzle->squares[row][col] = number;
 	puzzle->transponse[col][row] = number;
 }
@@ -174,8 +171,7 @@ void add_number(BinaryPuzzle* puzzle, int row, int col, int number) {
 int compare_arrays(int* first, int* second, int size) {
 	for (int i = 0; i < size; i++) {
 		if (first[i] != second[i]) {
-			return 1;
-			
+			return 1;			
 		}	
 	}
 	return 0;
@@ -306,6 +302,7 @@ int avoid_trios(BinaryPuzzle* puzzle) {
 	return changed;
 }
 
+//KAN DIT NIET LEESBAARDER ZODAT JE NIET TWEE KEER HETZELFDE HEBT???
 int complete_RC(BinaryPuzzle* puzzle) {
 	int changed = 1;	
 	for (int i = 0; i < *puzzle->dim; i++) {
@@ -332,7 +329,7 @@ int complete_RC(BinaryPuzzle* puzzle) {
 			}
 		}
 		//Change row
-		if (count_0 == *puzzle->dim / 2) {
+		if (count_0 == *puzzle->dim / 2 && count_empty != 0) {
 			if (count_empty == 2) {
 				add_number(puzzle, i, coordinates[0], 1);
 				add_number(puzzle, i, coordinates[1], 1);
@@ -342,7 +339,7 @@ int complete_RC(BinaryPuzzle* puzzle) {
 			}
 			changed = 0;
 		}
-		else if (count_1 == *puzzle->dim / 2) {
+		else if (count_1 == *puzzle->dim / 2 && count_empty != 0) {
 			if (count_empty == 2) {
 				add_number(puzzle, i, coordinates[0], 0);
 				add_number(puzzle, i, coordinates[1], 0);
@@ -375,7 +372,7 @@ int complete_RC(BinaryPuzzle* puzzle) {
 			}
 		}
 		//Change col
-		if (count_0_C == *puzzle->dim / 2) {
+		if (count_0_C == *puzzle->dim / 2 && count_empty != 0) {
 			if (count_empty_C == 2) {
 				add_number(puzzle, coordinates_C[0], i, 1);
 				add_number(puzzle, coordinates_C[1], i, 1);
@@ -385,7 +382,7 @@ int complete_RC(BinaryPuzzle* puzzle) {
 			}
 			changed = 0;
 		}
-		else if (count_1_C == *puzzle->dim / 2) {
+		else if (count_1_C == *puzzle->dim / 2 && count_empty != 0) {
 			if (count_empty_C == 2) {
 				add_number(puzzle, coordinates_C[0], i, 0);
 				add_number(puzzle, coordinates_C[1], i, 0);
