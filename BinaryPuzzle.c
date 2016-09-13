@@ -329,7 +329,7 @@ int complete_RC(BinaryPuzzle* puzzle) {
 			}
 		}
 		//Change row
-		if (count_0 == *puzzle->dim / 2 && count_empty != 0) {
+		if (count_0 == *puzzle->dim / 2 && count_empty) {
 			if (count_empty == 2) {
 				add_number(puzzle, i, coordinates[0], 1);
 				add_number(puzzle, i, coordinates[1], 1);
@@ -339,7 +339,7 @@ int complete_RC(BinaryPuzzle* puzzle) {
 			}
 			changed = 0;
 		}
-		else if (count_1 == *puzzle->dim / 2 && count_empty != 0) {
+		else if (count_1 == *puzzle->dim / 2 && count_empty) {
 			if (count_empty == 2) {
 				add_number(puzzle, i, coordinates[0], 0);
 				add_number(puzzle, i, coordinates[1], 0);
@@ -372,7 +372,7 @@ int complete_RC(BinaryPuzzle* puzzle) {
 			}
 		}
 		//Change col
-		if (count_0_C == *puzzle->dim / 2 && count_empty != 0) {
+		if (count_0_C == *puzzle->dim / 2 && count_empty_C) {
 			if (count_empty_C == 2) {
 				add_number(puzzle, coordinates_C[0], i, 1);
 				add_number(puzzle, coordinates_C[1], i, 1);
@@ -382,7 +382,7 @@ int complete_RC(BinaryPuzzle* puzzle) {
 			}
 			changed = 0;
 		}
-		else if (count_1_C == *puzzle->dim / 2 && count_empty != 0) {
+		else if (count_1_C == *puzzle->dim / 2 && count_empty_C) {
 			if (count_empty_C == 2) {
 				add_number(puzzle, coordinates_C[0], i, 0);
 				add_number(puzzle, coordinates_C[1], i, 0);
