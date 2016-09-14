@@ -1,21 +1,20 @@
 #ifndef ROWPOSSIBILITIES_H
 #define ROWPOSSIBILITIES_H
 
-#include "Node.h"
+#include "LinkedList.h"
 
 typedef struct RowPossibilities {
 	int* row_number;
 	int* number_of_possibilities;
-	int* row_length;
-	Node* first_node;
+	LinkedList* ll;
 }RowPossibilities;
 
-RowPossibilities* init_possibilities(Node* first_node, int* number_of_poss, int* row_number, int* row_length);
+RowPossibilities* init_possibilities(LinkedList* ll, int* number_of_poss, int* row_number);
 void free_possibilities(RowPossibilities* poss);
 void print_possibilities(RowPossibilities* poss);
 
-void add_possibilty(RowPossibilities* poss, int* possibility);
+void add_possibilty(RowPossibilities* poss, int* possibility, unsigned int* arr_length);
 
-int remove_possibility(RowPossibilities* poss, int* possibility);
+bool remove_possibility(RowPossibilities* poss, int* possibility);
 
 #endif

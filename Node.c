@@ -1,14 +1,14 @@
 
 #include "Node.h"
 
-Node* init_node(int* arr, Node* next, unsigned int arr_length) {
+Node* init_node(int* arr, Node* next, unsigned int* arr_length) {
 	Node* node = malloc(sizeof(Node));
 	if (!node) {
 		printf("ERROR: Allocation failed, insufficient memory for Node?\n");
 		exit(1);
 	}
 	// Create components
-	node->arr = malloc(sizeof(int) * arr_length);
+	node->arr = malloc(sizeof(int) * *arr_length);
 	node->next = malloc(sizeof(Node*));
 	node->arr_length = malloc(sizeof(int*));
 	if ( !node->arr || !node->next || !node->arr_length ) {
@@ -16,8 +16,8 @@ Node* init_node(int* arr, Node* next, unsigned int arr_length) {
 		exit(1);
 	}
 	// Initialize components
-	*node->arr = arr;
-	*node->arr_length = arr_length;
+	*node->arr = *arr;
+	*node->arr_length = *arr_length;
 	*node->next = *next;
 	return node;
 }
@@ -29,15 +29,20 @@ void free_node(Node* node) {
 	free(node);
 }
 
-int add_new_next(Node* current, Node* new_next) {
-	new_next->next = (current->next)->next;
-	free_node(current->next);
-	current->next = new_next;
+void add_new_next(Node* current, Node* new_next) {
+	if (current->next != NULL) {
+		new_next->next = (current->next)->next;
+		free_node(current->next);
+		current->next = new_next;
+	}
+	else {
+		current->next = new_next;
+	}
 }
 
 void print_node(Node* node) {
 	printf("Below see the array this node.\n");
-	for (int i = 0; i < node->arr_length; i++) {
+	for (int i = 0; i < *node->arr_length; i++) {
 		printf("%d", node->arr[i]);
 	}
 	if (node->next != NULL) {

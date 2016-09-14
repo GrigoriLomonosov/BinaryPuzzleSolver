@@ -10,8 +10,6 @@
 #define MIN_DIMENSION 6
 #define MAX_DIMENSION 36
 
-
-
 /*
 The field transponse is the transponse of the squares matrix. The transponse is kept because the matrix will be traversed several times
 in column-major order. This helps us prevent cache-missers, especially with big matrices.

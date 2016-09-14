@@ -12,7 +12,7 @@ void test() {
 	test_complete_RC();
 	test_eliminate_impossible_combos();
 	test_complete_pattern_RC();
-	//test_eliminate_other_impossible_combos();
+	test_eliminate_other_impossible_combos();
 	//test_general_solver();
 }
 

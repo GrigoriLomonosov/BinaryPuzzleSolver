@@ -147,12 +147,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BinaryPuzzle.h" />
+    <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="RowPossibilities.h" />
     <ClInclude Include="Tester.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryPuzzle.c" />
+    <ClCompile Include="LinkedList.c" />
     <ClCompile Include="Node.c" />
     <ClCompile Include="RowPossibilities.c" />
     <ClCompile Include="Tester.c" />
