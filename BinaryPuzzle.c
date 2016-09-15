@@ -17,6 +17,22 @@ bool check_char_in_string(char* input) {
 	}
 }
 
+//Returns an array of all possibilities a row/col can have for a given dimension
+int** all_possibilities(int* dim) {
+	//The minimal dimension is 6, so the number of possibilities is 2^(dim/2). This is not the correct formula for 2 and 4,
+	//but these dimensions should not be possible.
+	int** possibilities = malloc(sizeof(int*) * pow(2, *dim/2));
+	for (int i = 0; i < dim; i++) {
+		possibilities[i] = malloc(sizeof(int*) * *dim);
+	}
+	//fill with possible combos...
+	for (int i = 0; i < *dim; i++) {
+		for (int j = 0; j < *dim; j++) {
+			//TO DO
+		}
+	}
+}
+
 BinaryPuzzle* init_puzzle(int dim) {
 	if (dim % 2 != 0 || dim < MIN_DIMENSION || dim > MAX_DIMENSION) {
 		//printf("error: if n is the length of the inputstring, n should be even, >=36 and <= 1296);		
@@ -33,6 +49,8 @@ BinaryPuzzle* init_puzzle(int dim) {
 	puzzle_pointer->dim = malloc(sizeof(int));
 	puzzle_pointer->squares = calloc(sizeof(int*),dim);
 	puzzle_pointer->transponse = calloc(sizeof(int*),dim);
+	puzzle_pointer->row_possibilities = calloc(sizeof(RowPossibilities*),dim);
+	puzzle_pointer->col_possibilities = calloc(sizeof(RowPossibilities*), dim);
 
 	if (!puzzle_pointer->dim || !puzzle_pointer->squares || !puzzle_pointer->transponse) {
 		printf("ERROR: Allocation failed, insufficient memory for BinaryPuzzle?\n");
@@ -45,6 +63,8 @@ BinaryPuzzle* init_puzzle(int dim) {
 	for (int i = 0; i < dim; i++) {
 		puzzle_pointer->squares[i] = calloc(sizeof(int),dim);
 		puzzle_pointer->transponse[i] = calloc(sizeof(int),dim);
+		puzzle_pointer->row_possibilities[i] = malloc(sizeof(RowPossibilities*));
+		puzzle_pointer->col_possibilities[i] = malloc(sizeof(RowPossibilities*));
 	}
 	// return
 	return puzzle_pointer;
@@ -64,7 +84,6 @@ BinaryPuzzle* init_puzzle_by_pattern(char* input) {
 			printf("ERROR: Creation failed\n");
 			return NULL;
 		}
-
 		for (int i = 0; i < dimension; i++) {
 			for (int j = 0; j < dimension; j++) {
 				char c = input[i*dimension + j];
@@ -684,7 +703,7 @@ bool complete_pattern_RC(BinaryPuzzle* puzzle) {
 
 bool eliminate_other_impossible_combos(BinaryPuzzle* puzzle) {
 	bool changed = false;
-
+	//TO DO
 	return changed;
 }
 

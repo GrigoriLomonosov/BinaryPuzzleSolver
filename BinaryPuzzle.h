@@ -7,6 +7,8 @@
 #include <math.h>
 #include <stdbool.h>
 
+#include "RowPossibilities.h"
+
 #define MIN_DIMENSION 6
 #define MAX_DIMENSION 36
 
@@ -18,6 +20,8 @@ typedef struct BinaryPuzzle {
 	int* dim;
 	int** squares;
 	int** transponse;
+	RowPossibilities** row_possibilities;
+	RowPossibilities** col_possibilities
 } BinaryPuzzle;
 
 /*
